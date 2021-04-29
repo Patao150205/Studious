@@ -1,13 +1,18 @@
+body {
+  color: #444 !important;
+  font-family: "メイリオ", sans-serif !important;
+}
+
 /* ------------ Spacer -------------------*/
 
 .module-spacer--very-small {
   height: 12px;
 }
 .module-spacer--small {
-  height: 30px;
+  height: 18px;
 }
 .module-spacer--medium {
-  height: 45px;
+  height: 25px;
 }
 
 /* スマホ */
@@ -15,11 +20,12 @@
 /* ------------ Section -------------------*/
 .c-section-container {
   max-width: 600px;
+  min-width: 320px;
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  background-color: brown;
   padding: 0 1rem;
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .c-section-wrapping {
@@ -28,6 +34,8 @@
 .u-text-headline {
   font-size: 1.8rem;
   margin: 0 auto 1rem auto;
+  color: red;
+  font-family: cursive, sans-serif;
 }
 
 .u-text-sub-headline {
@@ -38,6 +46,36 @@
   border-radius: 50%;
   object-fit: cover;
   object-position: center;
+}
+
+.p-grid-rows {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.p-grid-rows--space-evenly {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.p-grid-columns {
+  display: flex;
+  flex-flow: column;
+}
+
+/*タブレット*/
+@media (min-width: 600px) {
+  /* ------------ Spacer -------------------*/
+  .module-spacer--very-small {
+    height: 12px;
+  }
+  .module-spacer--small {
+    height: 30px;
+  }
+  .module-spacer--medium {
+    height: 45px;
+  }
 }
 
 /* PC */

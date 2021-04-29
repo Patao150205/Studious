@@ -26,6 +26,12 @@ const useStyles = makeStyles(
       margin: "0 auto",
       maxWidth: 400,
     },
+    textButton: {
+      "&:hover": {
+        textDecoration: "underline",
+        cursor: "pointer",
+      },
+    },
   })
 );
 
@@ -35,7 +41,7 @@ const Login: FC = () => {
   return (
     <>
       <Head>
-        <title>STUDIOUS ログイン</title>
+        <title>STUDIOUS パスワードリセット</title>
       </Head>
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
@@ -48,61 +54,36 @@ const Login: FC = () => {
             height="40px"
           />
           <h1 className="u-text-headline">STUDIOUS</h1>
-          <h2 className="u-text-sub-headline">ログイン</h2>
+          <h2 className="u-text-sub-headline">パスワードのリセット</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form}>
-            <TextInput
-              label="username"
-              fullWidth={true}
-              multiline={false}
-              onChange={() => {}}
-              placeholder="ユーザー名"
-              required={true}
-              rows={1}
-              type="text"
-              value=""
-            />
             <div className="module-spacer--very-small" />
             <TextInput
               label="password"
               fullWidth={true}
               multiline={false}
               onChange={() => {}}
-              placeholder="パスワード"
+              placeholder="メールアドレス"
               required={true}
               rows={1}
-              type="password"
+              type="text"
               value=""
             />
             <div className="module-spacer--medium" />
             <div className="p-grid-columns">
               <PrimaryButton color="primary" disabled={false} onClick={() => {}}>
-                ログインする
+                メールを送信
               </PrimaryButton>
-              <div className="module-spacer--small" />
-              <SecondaryButton
-                startIcon={<TwitterIcon />}
-                disabled={false}
-                onClick={() => {}}
-                bgColor="#2a80e3"
-                fColor="#fff">
-                Twitterでログイン
-              </SecondaryButton>
-              <div className="module-spacer--very-small" />
-              <SecondaryButton
-                startIcon={<GitHubIcon />}
-                disabled={false}
-                onClick={() => {}}
-                bgColor="#000"
-                fColor="#fff">
-                GitHubでログイン
-              </SecondaryButton>
             </div>
-            <div className="module-spacer--medium" />
           </form>
-          <p onClick={() => {}}>新規登録はこちら</p>
+          <div className="module-spacer--small" />
+          <p className={classes.textButton} onClick={() => {}}>
+            ログインはこちら
+          </p>
           <div className="module-spacer--very-small" />
-          <p onClick={() => {}}>パスワードを忘れた方はこちら</p>
+          <p className={classes.textButton} onClick={() => {}}>
+            新規登録はこちら
+          </p>
           <div className="module-spacer--very-small" />
         </section>
       </div>

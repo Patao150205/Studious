@@ -83,8 +83,8 @@ video {
   padding: 0;
   border: 0;
   font-size: 100%;
-  font: inherit;
   vertical-align: baseline;
+  font-family: "メイリオ", "ヒラギノ角ゴ Pro", sans-serif;
 }
 /* HTML5 display-role reset for older browsers */
 article,

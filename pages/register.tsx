@@ -29,13 +29,13 @@ const useStyles = makeStyles(
   })
 );
 
-const Login: FC = () => {
+const Register: FC = () => {
   const classes = useStyles();
 
   return (
     <>
       <Head>
-        <title>STUDIOUS ログイン</title>
+        <title>STUDIOUS 新規登録</title>
       </Head>
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
@@ -48,7 +48,7 @@ const Login: FC = () => {
             height="40px"
           />
           <h1 className="u-text-headline">STUDIOUS</h1>
-          <h2 className="u-text-sub-headline">ログイン</h2>
+          <h2 className="u-text-sub-headline">新規登録</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form}>
             <TextInput
@@ -64,6 +64,18 @@ const Login: FC = () => {
             />
             <div className="module-spacer--very-small" />
             <TextInput
+              label="e-mail"
+              fullWidth={true}
+              multiline={false}
+              onChange={() => {}}
+              placeholder="メールアドレス"
+              required={true}
+              rows={1}
+              type="mail"
+              value=""
+            />
+            <div className="module-spacer--very-small" />
+            <TextInput
               label="password"
               fullWidth={true}
               multiline={false}
@@ -74,33 +86,27 @@ const Login: FC = () => {
               type="password"
               value=""
             />
+            <div className="module-spacer--very-small" />
+            <TextInput
+              label="password(reconfirmation)"
+              fullWidth={true}
+              multiline={false}
+              onChange={() => {}}
+              placeholder="パスワード再確認"
+              required={true}
+              rows={1}
+              type="password"
+              value=""
+            />
             <div className="module-spacer--medium" />
             <div className="p-grid-columns">
               <PrimaryButton color="primary" disabled={false} onClick={() => {}}>
-                ログインする
+                新規登録
               </PrimaryButton>
-              <div className="module-spacer--small" />
-              <SecondaryButton
-                startIcon={<TwitterIcon />}
-                disabled={false}
-                onClick={() => {}}
-                bgColor="#2a80e3"
-                fColor="#fff">
-                Twitterでログイン
-              </SecondaryButton>
-              <div className="module-spacer--very-small" />
-              <SecondaryButton
-                startIcon={<GitHubIcon />}
-                disabled={false}
-                onClick={() => {}}
-                bgColor="#000"
-                fColor="#fff">
-                GitHubでログイン
-              </SecondaryButton>
             </div>
             <div className="module-spacer--medium" />
           </form>
-          <p onClick={() => {}}>新規登録はこちら</p>
+          <p onClick={() => {}}>ログインはこちら</p>
           <div className="module-spacer--very-small" />
           <p onClick={() => {}}>パスワードを忘れた方はこちら</p>
           <div className="module-spacer--very-small" />
@@ -110,4 +116,4 @@ const Login: FC = () => {
   );
 };
 
-export default Login;
+export default Register;
