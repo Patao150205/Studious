@@ -1,0 +1,47 @@
+/* ------------ Spacer -------------------*/
+
+.module-spacer--very-small {
+  height: 12px;
+}
+.module-spacer--small {
+  height: 30px;
+}
+.module-spacer--medium {
+  height: 45px;
+}
+
+/* スマホ */
+
+/* ------------ Section -------------------*/
+.c-section-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  background-color: brown;
+  padding: 0 1rem;
+}
+
+.c-section-wrapping {
+}
+
+.u-text-headline {
+  font-size: 1.8rem;
+  margin: 0 auto 1rem auto;
+}
+
+.u-text-sub-headline {
+  font-size: 1.4rem;
+}
+
+.u-logo-img--general {
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* PC */
+@media (min-width: 1280px) {
+  .c-section-wrapping {
+  }
+}
