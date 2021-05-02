@@ -13,8 +13,8 @@ function handleRender(req, res) {
     sheets.collect(
       <ThemeProvider theme={theme}>
         <App />
-      </ThemeProvider>
-    )
+      </ThemeProvider>,
+    ),
   );
 
   // Grab the CSS from the sheets.

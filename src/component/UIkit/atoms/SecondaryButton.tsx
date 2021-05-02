@@ -1,4 +1,5 @@
-import { Button } from "@material-ui/core";
+import { Button, SvgIconTypeMap } from "@material-ui/core";
+import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import React from "react";
 
@@ -11,7 +12,7 @@ type Props = {
   startIcon: any;
 };
 
-const SecondButton = ({ disabled, onClick, children, bgColor, fColor, startIcon }) => {
+const SecondButton = ({ disabled, onClick, children, bgColor, fColor, startIcon }: Props) => {
   const useStyles = makeStyles(
     createStyles({
       root: {

@@ -1,11 +1,13 @@
-import Firebase from "firebase/app";
+import firebase from "firebase/app";
 import "firebase/auth";
-import "firebase/database";
+import "firebase/firestore";
 import "firebase/storage";
+import "firebase/analytics";
 
-export const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBhUr2QPiHdVAHtmGc9qXiJ39b_RksH8LA",
   authDomain: "stadious.firebaseapp.com",
+  databaseURL: "https://stadious.firebaseio.com",
   projectId: "stadious",
   storageBucket: "stadious.appspot.com",
   messagingSenderId: "459323240550",
@@ -13,9 +15,18 @@ export const firebaseConfig = {
   measurementId: "G-T22RM7G9GV",
 };
 
-export const firebase = Firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 export const auth = firebase.auth();
+export const TwitterProvider = new firebase.auth.TwitterAuthProvider();
+export const GitHubProvider = new firebase.auth.GithubAuthProvider();
+
 export const db = firebase.firestore();
+
 export const storage = firebase.storage();
 
-export const FirebaseTimestamp = Firebase.firestore.Timestamp;
+export const FirebaseTimestamp = firebase.firestore.Timestamp;
+
+export default firebase;
