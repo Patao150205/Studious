@@ -1,9 +1,24 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { db } from "../../firebase/firebaseConfig";
 import { RootState } from "../store";
 
-//Operation
+//Thunk
+export const updateProfile: any = createAsyncThunk("user/updateProfile", async (data: UserProfile, thunk) => {
+  const uid = data.uid;
+  await db.collection("users").doc(uid).set(data, { merge: true });
+  //Redux用にキャストする
+  data.created_at = data.created_at.toDate().toLocaleString();
+  return data;
+});
 
-const signUpWithEmail = createAsyncThunk("user/signUpByEmail", async (action, thunk) => {});
+export const fetchUserInfo: any = createAsyncThunk("user/fetchUserInfo", async (uid: string, thunk) => {
+  const res = await db.collection("users").doc(uid).get();
+  const data: any = res.data();
+
+  data.created_at = data.created_at.toDate().toLocaleString();
+  console.log(data.created_at);
+  return data;
+});
 
 //型の値の型を抽出する。
 type ValueOf<T> = T[keyof T];
@@ -17,7 +32,6 @@ export type UserState = {
     sns_path: { twitter: string; GitHub: string };
     target: string;
     uid: string;
-    updated_at: any;
     username: string;
   };
   myRecords: [
@@ -47,7 +61,6 @@ export const initialState: UserState = {
     sns_path: { twitter: "", GitHub: "" },
     target: "",
     uid: "",
-    updated_at: null,
     username: "",
   },
   myRecords: [
@@ -67,13 +80,20 @@ export const initialState: UserState = {
 const usersSlice = createSlice({
   name: "users",
   initialState,
-  reducers: {
-    updateCurrnetUser: (state, action: PayloadAction<UserState>) => action.payload,
-    updateUserProfile: (state, action: PayloadAction<UserProfile>) => {
-      state.myProfile = action.payload;
+  reducers: {},
+  extraReducers: {
+    [updateProfile.fulfilled]: (state, action) => {
+      state = action.payload;
+      console.log(action.payload);
     },
-    updateUserRecords: (state, action: PayloadAction<UserRecords>) => {
-      state.myRecords = action.payload;
+    [updateProfile.rejected]: () => {
+      alert("エラーが発生しました。");
+    },
+    [fetchUserInfo.fulfilled]: (state, action) => {
+      state = action.payload;
+    },
+    [fetchUserInfo.rejected]: () => {
+      alert("エラーが発生しました");
     },
   },
 });
@@ -82,6 +102,6 @@ export const userSelector = (state: RootState) => state.users;
 export const userProfileSelector = (state: RootState) => state.users.myProfile;
 export const userRecordSelector = (state: RootState) => state.users.myRecords;
 
-export const { updateCurrnetUser, updateUserProfile, updateUserRecords } = usersSlice.actions;
+export const {} = usersSlice.actions;
 
 export default usersSlice.reducer;
