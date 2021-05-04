@@ -32,9 +32,15 @@ body {
 
 .u-text-headline {
   font-size: 1.8rem;
-  margin: 0 auto 1rem auto;
   color: red;
   font-family: cursive, sans-serif;
+}
+
+.u-text-headline--variable {
+  font-size: 1.4rem;
+  color: red;
+  font-family: cursive, sans-serif;
+  cursor: pointer;
 }
 
 .u-text-sub-headline {
@@ -74,6 +80,11 @@ body {
   }
   .module-spacer--medium {
     height: 45px;
+  }
+  .u-text-headline--variable {
+    font-size: 1.8rem;
+    color: red;
+    font-family: cursive, sans-serif;
   }
 }
 

@@ -4,7 +4,7 @@ import React, { FC, useCallback, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, TextValidation } from "../src/component/UIkit/molecule/index";
+import { PrimaryModal, TextValidation } from "../src/component/UIkit/molecules/index";
 import { passwordResetWithEmail } from "../src/Auth";
 
 const useStyles = makeStyles(
@@ -12,7 +12,7 @@ const useStyles = makeStyles(
     root: {
       backgroundImage: "url(img/books-1456513080510-7bf3a84b82f8.jpeg)",
       backgroundPosition: "center",
-      height: "120vh",
+      height: "100vh",
       position: "relative",
     },
     card: {
@@ -79,6 +79,7 @@ const Reset: FC = () => {
             height="40px"
           />
           <h1 className="u-text-headline">STUDIOUS</h1>
+          <div className="module-spacer--very-small" />
           <h2 className="u-text-sub-headline">パスワードのリセット</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
@@ -103,12 +104,12 @@ const Reset: FC = () => {
             </div>
           </form>
           <div className="module-spacer--small" />
-          <Link href="/login">
+          <Link href="/signin">
             <a className={classes.textButton}>ログインはこちら</a>
           </Link>
 
           <div className="module-spacer--very-small" />
-          <Link href="/register">
+          <Link href="/signup">
             <a className={classes.textButton}>新規登録はこちら</a>
           </Link>
           <div className="module-spacer--very-small" />

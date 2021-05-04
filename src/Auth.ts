@@ -1,7 +1,7 @@
 import { auth, db, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
 import { initialState, fetchUserInfo, updateProfile } from "./features/usersSlice";
 
-export const signUpWithEmailPassword = (
+export const signUpWithEmailPassword = async (
   email: string,
   dispatch: any,
   password: string,
@@ -11,7 +11,7 @@ export const signUpWithEmailPassword = (
 ) => {
   auth
     .createUserWithEmailAndPassword(email, password)
-    .then(async (snapshot) => {
+    .then((snapshot) => {
       const user = snapshot.user;
       if (user === null) {
         throw new Error("ユーザ情報を取得できませんでした。");
@@ -48,7 +48,7 @@ export const signUpWithEmailPassword = (
     });
 };
 
-export const signInWithEmailPassword = (
+export const signInWithEmailPassword = async (
   email: string,
   dispatch: any,
   password: string,
@@ -58,7 +58,7 @@ export const signInWithEmailPassword = (
 ) => {
   auth
     .signInWithEmailAndPassword(email, password)
-    .then(async (snapshot) => {
+    .then((snapshot) => {
       const user = snapshot.user;
       if (user === null) {
         throw new Error("ユーザ情報を取得できませんでした。");
@@ -82,12 +82,12 @@ export const signInWithEmailPassword = (
     });
 };
 
-export const SignInWithTwitter = (
+export const SignInWithTwitter = async (
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
   toggleOpen: () => void,
   dispatch: any
-): void => {
+) => {
   auth
     .signInWithPopup(TwitterProvider)
     .then((result) => {
@@ -120,12 +120,12 @@ export const SignInWithTwitter = (
     });
 };
 
-export const SignInWithGitHub = (
+export const SignInWithGitHub = async (
   dispatch: any,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
   toggleOpen: () => void
-): void => {
+) => {
   auth
     .signInWithPopup(GitHubProvider)
     .then((result) => {
@@ -167,12 +167,12 @@ export const SignInWithGitHub = (
     });
 };
 
-export const passwordResetWithEmail = (
+export const passwordResetWithEmail = async (
   email: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-): void => {
+) => {
   auth
     .sendPasswordResetEmail(email)
     .then(() => {
