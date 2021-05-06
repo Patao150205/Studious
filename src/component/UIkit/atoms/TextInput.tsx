@@ -12,6 +12,9 @@ type Props = {
   field: any;
 };
 
+/**
+ * React-hook-form使用するため、PrimaryTextの方を実際に使用すること！
+ */
 const TextInput = ({ field, label, fullWidth, multiline, placeholder, required, rows, type }: Props) => {
   return (
     <TextField

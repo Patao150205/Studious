@@ -9,7 +9,7 @@ type Props = {
   submit?: boolean;
 };
 
-const PrimaryButton = ({ color, disabled, onClick = null, children, submit = false }: Props) => {
+const PrimaryButton = ({ color, disabled, onClick, children, submit = false }: Props) => {
   return (
     <Button color={color} disabled={disabled} variant="contained" onClick={onClick} type={submit ? "submit" : "button"}>
       {children}

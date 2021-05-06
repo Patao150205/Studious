@@ -14,9 +14,7 @@ export const updateProfile: any = createAsyncThunk("user/updateProfile", async (
 export const fetchUserInfo: any = createAsyncThunk("user/fetchUserInfo", async (uid: string, thunk) => {
   const res = await db.collection("users").doc(uid).get();
   const data: any = res.data();
-
   data.created_at = data.created_at.toDate().toLocaleString();
-  console.log(data.created_at);
   return data;
 });
 
@@ -84,7 +82,6 @@ const usersSlice = createSlice({
   extraReducers: {
     [updateProfile.fulfilled]: (state, action) => {
       state = action.payload;
-      console.log(action.payload);
     },
     [updateProfile.rejected]: () => {
       alert("エラーが発生しました。");

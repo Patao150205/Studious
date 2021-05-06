@@ -1,15 +1,36 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Head from "next/head";
-import { ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import theme from "../styles/theme";
+import React, { useEffect, useState } from "react";
 import "../styles/reset.css";
 import "../styles/styles.css";
+import "../src/fontawesome";
+import PropTypes from "prop-types";
+import Head from "next/head";
+import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+import theme from "../styles/theme";
 import { Provider } from "react-redux";
 import { store } from "../src/store";
+import AuthObserver from "../src/AuthObserver";
+import { Header, Sidebar } from "../src/templates/index";
+import { useRouter } from "next/router";
+
+const useStyles = makeStyles((theme) => ({
+  spaces: {
+    marginTop: 55,
+    [theme.breakpoints.up("sm")]: {
+      marginTop: 65,
+    },
+  },
+  toggleSpace: {
+    [theme.breakpoints.up("lg")]: {
+      marginLeft: 300,
+    },
+  },
+}));
 
 export default function MyApp(props) {
+  const classes = useStyles();
+  const router = useRouter();
+
+  const [url, setUrl] = useState("");
   const { Component, pageProps } = props;
 
   React.useEffect(() => {
@@ -20,6 +41,11 @@ export default function MyApp(props) {
     }
   }, []);
 
+  const disabledURL = ["/signin", "/signup", "/reset"];
+  useEffect(() => {
+    setUrl(router.pathname);
+  }, [router.pathname]);
+
   return (
     <React.Fragment>
       <Head>
@@ -27,11 +53,14 @@ export default function MyApp(props) {
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
+        <AuthObserver>
+          <ThemeProvider theme={theme}>
+            <Header>{disabledURL.includes(url) || <Sidebar />}</Header>
+            <div className={`${classes.spaces} ${disabledURL.includes(url) || classes.toggleSpace}`}>
+              <Component {...pageProps} />
+            </div>
+          </ThemeProvider>
+        </AuthObserver>
       </Provider>
     </React.Fragment>
   );

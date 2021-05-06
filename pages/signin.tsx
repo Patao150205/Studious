@@ -1,12 +1,15 @@
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Head from "next/head";
 import React, { FC, useCallback, useState } from "react";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import GitHubIcon from "@material-ui/icons/GitHub";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { PrimaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, TextValidation } from "../src/component/UIkit/molecule/index";
-import { signUpWithEmailPassword } from "../src/Auth";
-import { useAppDispatch, useAppSelector } from "../src/features/hooks";
+import { PrimaryButton, SecondaryButton } from "../src/component/UIkit/atoms";
+import { PrimaryModal, PrimaryText } from "../src/component/UIkit/molecules";
+import { signInWithEmailPassword, SignInWithGitHub, SignInWithTwitter } from "../src/Auth";
+import { useAppDispatch } from "../src/features/hooks";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles(
   createStyles({
@@ -14,8 +17,7 @@ const useStyles = makeStyles(
       position: "relative",
       backgroundImage: "url(img/books-1456513080510-7bf3a84b82f8.jpeg)",
       backgroundPosition: "center",
-      backgroundRepeat: "repeat",
-      height: "120vh",
+      height: "100vh",
     },
     card: {
       boxShadow: "0px 5px 5px 1px rgba(0, 0, 0, .2)",
@@ -37,15 +39,11 @@ const useStyles = makeStyles(
         cursor: "pointer",
       },
     },
+    errorMessage: {
+      color: "red",
+    },
   })
 );
-
-type FormData = {
-  registerConfirmPassword: string;
-  registerEmail: string;
-  registerPassword: string;
-  registerUsername: string;
-};
 
 const Register: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,42 +52,31 @@ const Register: FC = () => {
 
   const classes = useStyles();
   const dispatch = useAppDispatch();
-  const toggleOpen = useCallback(() => {
-    setIsOpen(!isOpen);
-  }, [isOpen]);
+  const router = useRouter();
 
   const {
     handleSubmit,
     formState: { errors },
     control,
   } = useForm({
-    defaultValues: {
-      registerUsername: "",
-      registerEmail: "",
-      registerPassword: "",
-      registerConfirmPassword: "",
-    },
+    defaultValues: { signinEmail: "", signinPassword: "" },
   });
 
-  const onSubmit = (data: FormData) => {
-    const password: string = data.registerPassword;
-    const confirmPassword: string = data.registerConfirmPassword;
-    const email: string = data.registerEmail;
+  const onSubmit = useCallback(async (data) => {
+    const email: string = data.signinEmail;
+    const password: string = data.signinPassword;
+    await signInWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen);
+    router.push("/");
+  }, []);
 
-    console.log(data);
-    if (password !== confirmPassword) {
-      setTitle("パスワードエラー");
-      setMessage("パスワードとパスワード(再確認)が一致しません。もう一度お試しください。");
-      toggleOpen();
-      return;
-    }
-    signUpWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen);
-  };
+  const toggleOpen = useCallback(() => {
+    setIsOpen(!isOpen);
+  }, [isOpen]);
 
   return (
     <>
       <Head>
-        <title>STUDIOUS 新規登録</title>
+        <title>STUDIOUS ログイン</title>
       </Head>
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
@@ -102,20 +89,11 @@ const Register: FC = () => {
             height="40px"
           />
           <h1 className="u-text-headline">STUDIOUS</h1>
-          <h2 className="u-text-sub-headline">新規登録</h2>
+          <div className="module-spacer--very-small" />
+          <h2 className="u-text-sub-headline">ログイン</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-            <TextValidation
-              control={control}
-              errors={errors}
-              label="username"
-              name="registerUsername"
-              placeholder="ユーザー名"
-              rules={{}}
-              type="text"
-            />
-            <div className="module-spacer--very-small" />
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="正しいメールアドレスを入力してください"
@@ -123,12 +101,12 @@ const Register: FC = () => {
                 pattern: /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/,
               }}
               label="e-mail"
-              name="registerEmail"
+              name="signinEmail"
               placeholder="メールアドレス"
               type="email"
             />
             <div className="module-spacer--very-small" />
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="パスワードは半角英数字で入力してください"
@@ -136,33 +114,44 @@ const Register: FC = () => {
                 pattern: /^(?=.*?[a-z])(?=.*?\d)[a-z\d]{8,100}$/i,
               }}
               label="password"
-              name="registerPassword"
+              name="signinPassword"
               placeholder="パスワード"
-              type="password"
-            />
-            <div className="module-spacer--very-small" />
-            <TextValidation
-              control={control}
-              errors={errors}
-              errorMessage="パスワードは半角英数字で入力してください"
-              rules={{
-                pattern: /^(?=.*?[a-z])(?=.*?\d)[a-z\d]{8,100}$/i,
-              }}
-              label="password(reconfirmation)"
-              name="registerConfirmPassword"
-              placeholder="パスワード(再確認)"
               type="password"
             />
             <div className="module-spacer--medium" />
             <div className="p-grid-columns">
               <PrimaryButton submit={true} color="primary" disabled={false}>
-                新規登録
+                ログインする
               </PrimaryButton>
+              <div className="module-spacer--small" />
+              <SecondaryButton
+                startIcon={<TwitterIcon />}
+                disabled={false}
+                onClick={async () => {
+                  await SignInWithTwitter(setTitle, setMessage, toggleOpen, dispatch);
+                  router.push("/");
+                }}
+                bgColor="#2a80e3"
+                fColor="#fff">
+                Twitterでログイン
+              </SecondaryButton>
+              <div className="module-spacer--very-small" />
+              <SecondaryButton
+                startIcon={<GitHubIcon />}
+                disabled={false}
+                onClick={async () => {
+                  await SignInWithGitHub(dispatch, setTitle, setMessage, toggleOpen);
+                  router.push("/");
+                }}
+                bgColor="#000"
+                fColor="#fff">
+                GitHubでログイン
+              </SecondaryButton>
             </div>
             <div className="module-spacer--medium" />
           </form>
-          <Link href="/login">
-            <a className={classes.textButton}>ログインはこちら</a>
+          <Link href="/signup">
+            <a className={classes.textButton}>新規登録はこちら</a>
           </Link>
           <div className="module-spacer--very-small" />
           <Link href="/reset">
@@ -174,7 +163,6 @@ const Register: FC = () => {
       <PrimaryModal isOpen={isOpen} title={title} toggleOpen={toggleOpen}>
         {message}
       </PrimaryModal>
-      ;
     </>
   );
 };

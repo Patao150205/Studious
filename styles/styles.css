@@ -3,6 +3,7 @@ body {
   font-family: "メイリオ", sans-serif !important;
 }
 
+/* スマホ */
 /* ------------ Spacer -------------------*/
 
 .module-spacer--very-small {
@@ -15,26 +16,36 @@ body {
   height: 25px;
 }
 
-/* スマホ */
-
 /* ------------ Section -------------------*/
 .c-section-container {
-  max-width: 600px;
-  min-width: calc(320px - 2rem);
+  max-width: calc(100% - 2rem);
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  height: auto;
   padding: 0 1rem;
 }
 
-.c-section-wrapping {
+.c-section-wrapping--main {
+  background-color: rgb(110, 34, 182);
+  min-height: 100vh;
+  height: 100%;
+  overflow: scroll;
 }
+
+/* ------------ utils -------------------*/
 
 .u-text-headline {
   font-size: 1.8rem;
-  margin: 0 auto 1rem auto;
   color: red;
   font-family: cursive, sans-serif;
+}
+
+.u-text-headline--variable {
+  font-size: 1.4rem;
+  color: red;
+  font-family: cursive, sans-serif;
+  cursor: pointer;
 }
 
 .u-text-sub-headline {
@@ -47,9 +58,21 @@ body {
   object-position: center;
 }
 
+.u-text--center {
+  text-align: center;
+}
+
+.center {
+  margin: 0 auto;
+}
+
 .p-grid-rows {
   display: flex;
-  flex-wrap: wrap;
+}
+
+.p-grid-rows--evenly {
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .p-grid-rows--space-evenly {
@@ -63,6 +86,12 @@ body {
   flex-flow: column;
 }
 
+.p-grid-columns--center {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+}
 /*タブレット*/
 @media (min-width: 600px) {
   /* ------------ Spacer -------------------*/
@@ -74,6 +103,15 @@ body {
   }
   .module-spacer--medium {
     height: 45px;
+  }
+  .u-text-headline--variable {
+    font-size: 1.8rem;
+    color: red;
+    font-family: cursive, sans-serif;
+  }
+  /* ------------ Section -------------------*/
+  .c-section-container {
+    max-width: 600px;
   }
 }
 
