@@ -5,13 +5,13 @@ import { TextInput } from "../atoms";
 
 type Props = {
   control: any;
-  errors: any;
+  errors?: any;
   errorMessage?: string;
   defaultValue?: string;
   fullWidth?: boolean;
   required?: boolean;
   rows?: number;
-  rules: any;
+  rules?: any;
   label: string;
   multiline?: boolean;
   name: string;
@@ -33,11 +33,6 @@ const TextValidation = ({
   placeholder,
   type,
 }: Props) => {
-  // switch (errors.type) {
-  //   case "pattern":
-  //     if()
-  // }
-
   return (
     <>
       <Controller
@@ -57,11 +52,13 @@ const TextValidation = ({
         )}
         rules={rules}
       />
-      <ErrorMessage
-        errors={errors}
-        name={name}
-        render={() => <span style={{ color: "red" }}>{errorMessage ? errorMessage : "エラー"}</span>}
-      />
+      {errors && (
+        <ErrorMessage
+          errors={errors}
+          name={name}
+          render={() => <span style={{ color: "red" }}>{errorMessage ? errorMessage : "エラー"}</span>}
+        />
+      )}
     </>
   );
 };

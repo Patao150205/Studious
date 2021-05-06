@@ -1,8 +1,8 @@
 import { createStyles, makeStyles, Modal, Theme } from "@material-ui/core";
-import React, { FC } from "react";
+import React, { FC, forwardRef } from "react";
 import { MainMenu } from "../component/UIkit/organisms";
 
-const useStyles = makeStyles((theme: any) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     modal: {
       minWidth: 320,
@@ -26,10 +26,10 @@ type Props = {
 
 const MenuModal: FC<Props> = ({ open, onClose }) => {
   const classes = useStyles();
-
+  const RefMainMenu = React.forwardRef((props, ref) => <MainMenu forwardRef={ref} />);
   return (
     <Modal keepMounted open={open} onClose={() => onClose()} className={classes.modal}>
-      <MainMenu />
+      <RefMainMenu />
     </Modal>
   );
 };

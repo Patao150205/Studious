@@ -4,7 +4,7 @@ import React, { FC, useCallback, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, TextValidation } from "../src/component/UIkit/molecules/index";
+import { PrimaryModal, PrimaryText } from "../src/component/UIkit/molecules/index";
 import { signUpWithEmailPassword } from "../src/Auth";
 import { useAppDispatch, useAppSelector } from "../src/features/hooks";
 
@@ -105,7 +105,7 @@ const Register: FC = () => {
           <h2 className="u-text-sub-headline">新規登録</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               label="username"
@@ -115,7 +115,7 @@ const Register: FC = () => {
               type="text"
             />
             <div className="module-spacer--very-small" />
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="正しいメールアドレスを入力してください"
@@ -128,7 +128,7 @@ const Register: FC = () => {
               type="email"
             />
             <div className="module-spacer--very-small" />
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="パスワードは半角英数字で入力してください"
@@ -141,7 +141,7 @@ const Register: FC = () => {
               type="password"
             />
             <div className="module-spacer--very-small" />
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="パスワードは半角英数字で入力してください"

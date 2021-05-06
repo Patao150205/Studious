@@ -1,4 +1,5 @@
-import { auth, db, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
+import { NextRouter } from "next/router";
+import { auth, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
 import { initialState, fetchUserInfo, updateProfile } from "./features/usersSlice";
 
 export const signUpWithEmailPassword = async (
@@ -165,6 +166,12 @@ export const SignInWithGitHub = async (
           break;
       }
     });
+};
+
+export const logout = (router: NextRouter) => {
+  auth.signOut().then(() => {
+    router.push("/signin");
+  });
 };
 
 export const passwordResetWithEmail = async (

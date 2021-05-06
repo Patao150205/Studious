@@ -6,7 +6,7 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton, SecondaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, TextValidation } from "../src/component/UIkit/molecules";
+import { PrimaryModal, PrimaryText } from "../src/component/UIkit/molecules";
 import { signInWithEmailPassword, SignInWithGitHub, SignInWithTwitter } from "../src/Auth";
 import { useAppDispatch } from "../src/features/hooks";
 import { useRouter } from "next/router";
@@ -93,7 +93,7 @@ const Register: FC = () => {
           <h2 className="u-text-sub-headline">ログイン</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="正しいメールアドレスを入力してください"
@@ -106,7 +106,7 @@ const Register: FC = () => {
               type="email"
             />
             <div className="module-spacer--very-small" />
-            <TextValidation
+            <PrimaryText
               control={control}
               errors={errors}
               errorMessage="パスワードは半角英数字で入力してください"
