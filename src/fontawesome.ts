@@ -7,6 +7,7 @@ import {
   faSignOutAlt,
   faUserEdit,
   faFlag,
+  faMarker,
   faUserCircle,
   faUsers,
   faUser,
@@ -21,6 +22,7 @@ library.add(
   faSignOutAlt,
   faUserEdit,
   faFlag,
+  faMarker,
   faUsers,
   faUser,
   faNewspaper

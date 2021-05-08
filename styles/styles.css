@@ -45,7 +45,6 @@ body {
   font-size: 1.4rem;
   color: red;
   font-family: cursive, sans-serif;
-  cursor: pointer;
 }
 
 .u-text-sub-headline {
@@ -68,6 +67,10 @@ body {
 
 .p-grid-rows {
   display: flex;
+}
+.p-grid-rows--center {
+  display: flex;
+  justify-content: center;
 }
 
 .p-grid-rows--evenly {

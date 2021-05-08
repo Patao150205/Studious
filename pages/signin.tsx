@@ -6,7 +6,7 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton, SecondaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, PrimaryText } from "../src/component/UIkit/molecules";
+import { PrimaryModal, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules";
 import { signInWithEmailPassword, SignInWithGitHub, SignInWithTwitter } from "../src/Auth";
 import { useAppDispatch } from "../src/features/hooks";
 import { useRouter } from "next/router";
@@ -62,11 +62,10 @@ const Register: FC = () => {
     defaultValues: { signinEmail: "", signinPassword: "" },
   });
 
-  const onSubmit = useCallback(async (data) => {
+  const onSubmit = useCallback((data) => {
     const email: string = data.signinEmail;
     const password: string = data.signinPassword;
-    await signInWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen);
-    router.push("/");
+    signInWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen, router);
   }, []);
 
   const toggleOpen = useCallback(() => {
@@ -81,14 +80,7 @@ const Register: FC = () => {
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
           <div className="module-spacer--medium" />
-          <img
-            src="/studious-logo.jpg"
-            alt="/studious-logo"
-            className="u-logo-img--general"
-            width="40px"
-            height="40px"
-          />
-          <h1 className="u-text-headline">STUDIOUS</h1>
+          <StudiousLogoVertical />
           <div className="module-spacer--very-small" />
           <h2 className="u-text-sub-headline">ログイン</h2>
           <div className="module-spacer--medium" />
@@ -127,9 +119,8 @@ const Register: FC = () => {
               <SecondaryButton
                 startIcon={<TwitterIcon />}
                 disabled={false}
-                onClick={async () => {
-                  await SignInWithTwitter(setTitle, setMessage, toggleOpen, dispatch);
-                  router.push("/");
+                onClick={() => {
+                  SignInWithTwitter(setTitle, setMessage, toggleOpen, dispatch, router);
                 }}
                 bgColor="#2a80e3"
                 fColor="#fff">
@@ -139,9 +130,10 @@ const Register: FC = () => {
               <SecondaryButton
                 startIcon={<GitHubIcon />}
                 disabled={false}
-                onClick={async () => {
-                  await SignInWithGitHub(dispatch, setTitle, setMessage, toggleOpen);
-                  router.push("/");
+                onClick={() => {
+                  SignInWithGitHub(dispatch, setTitle, setMessage, toggleOpen, router).then(() => {
+                    router.push("/");
+                  });
                 }}
                 bgColor="#000"
                 fColor="#fff">

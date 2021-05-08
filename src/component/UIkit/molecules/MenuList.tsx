@@ -3,6 +3,8 @@ import { createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, T
 import { useRouter } from "next/router";
 import React, { FC, ReactNode, useCallback } from "react";
 import { logout } from "../../../Auth";
+import { auth } from "../../../../firebase/firebaseConfig";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -33,9 +35,14 @@ type ListeItemContent = {
   onClick: () => void;
 };
 
-const MenuList: FC = () => {
+type Props = { handleToggle: () => void };
+
+const MenuList: FC<Props> = ({ handleToggle }) => {
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const uid = auth.currentUser?.uid ?? "エラー";
 
   const ListItemContents: ListeItemContent[] = [
     {
@@ -83,14 +90,14 @@ const MenuList: FC = () => {
       primary: "ログアウト",
       secondary: "Logout",
       onClick: useCallback(() => {
-        logout(router);
+        logout(router, uid, dispatch);
       }, [logout, router]),
     },
   ];
 
   return (
     <>
-      <List subheader={<h2 className={classes.headerText}>Menu</h2>} className={classes.list}>
+      <List onClick={handleToggle} subheader={<h2 className={classes.headerText}>Menu</h2>} className={classes.list}>
         {ListItemContents.map((content) => (
           <ListItem key={content.secondary} onClick={content.onClick} button selected divider>
             <ListItemIcon className={classes.icon}>{content.icon}</ListItemIcon>

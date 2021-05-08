@@ -14,6 +14,9 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconWithName } from "../src/component/UIkit/molecules";
+import { useSelector } from "react-redux";
+import { userMyInfoSelector } from "../src/features/usersSlice";
+import HTMLReactParser from "html-react-parser";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,15 +38,10 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       justifyContent: "space-evenly",
       flexWrap: "wrap",
-      "@media (max-width: 750px)": {
+      "@media (max-width: 800px)": {
         flexFlow: "column",
         alignItems: "center",
       },
-    },
-    charts: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
     },
     boardsWrapper: {
       display: "flex",
@@ -65,12 +63,20 @@ const useStyles = makeStyles((theme: Theme) =>
         marginTop: 40,
       },
     },
+    charts: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
   })
 );
 
 export default function Home() {
   const router = useRouter();
   const classes = useStyles();
+  const selector = useSelector(userMyInfoSelector);
+  const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
+  const target = HTMLReactParser(selector.target.replace(/\n/g, "<br />"));
 
   return (
     <>
@@ -84,18 +90,18 @@ export default function Home() {
           <div className={classes.profile}>
             <div className="u-text--center">
               <IconWithName
-                src="/studious-logo.jpg"
-                alt="studious-logo"
-                name="ぱたお"
+                src={selector.photoURL}
+                alt="プロフィール画像"
+                name={selector.username}
                 onClick={() => router.push("/")}
               />
               <div className="module-spacer--small" />
-              <div className="p-grid-rows--evenly">
+              <div className="p-grid-rows--center">
                 <SecondaryButton
                   startIcon={<TwitterIcon />}
                   disabled={false}
                   onClick={() => {
-                    router.push("/");
+                    window.location.href = selector.sns_path.twitter;
                   }}
                   bgColor="#2a80e3"
                   fColor="#fff">
@@ -106,7 +112,7 @@ export default function Home() {
                   startIcon={<GitHubIcon />}
                   disabled={false}
                   onClick={() => {
-                    router.push("/");
+                    window.location.href = selector.sns_path.GitHub;
                   }}
                   bgColor="#000"
                   fColor="#fff">
@@ -115,23 +121,7 @@ export default function Home() {
               </div>
             </div>
             <div className="module-spacer--small" />
-            <Blackboard
-              content={
-                <>
-                  <h1>＜自己紹介＞</h1>
-                  <p>こんにちは！</p>
-                  <p>まいねいむ いず ぱたお</p>
-                  <h1>＜コメント＞</h1>
-                  <p>
-                    プログラミングをべんきょうしてるよプログラミングをべんきょうしてるよプログラミングをべんきょうしてるよ
-                  </p>
-                  <p>プログラミングをべんきょうしてるよ</p>
-                  <p>プログラミングをべんきょうしてるよ</p>
-                  <p>プログラミングをべんきょうしてるよ</p>
-                  <p>プログラミングをべんきょうしてるよ</p>
-                </>
-              }
-            />
+            <Blackboard content={introduce_myself} />
           </div>
           <div className="module-spacer--small" />
           <div className={classes.boardsWrapper}>
@@ -141,7 +131,7 @@ export default function Home() {
                 title="ユーザー情報"
                 subTitle="User status">
                 <>
-                  <p>初回ログイン日: 2017/02/09</p>
+                  <p>初回ログイン日: {selector.created_at}</p>
                   <br />
                   <p>投稿日数 : 323 (日)</p>
                   <br />
@@ -159,9 +149,7 @@ export default function Home() {
                 <>
                   <h1>目標</h1>
                   <div className="module-spacer--very-small" />
-                  <p>
-                    絶対にドキンちゃんになる！絶対にドキンちゃんになる！絶対にドキンちゃんになる！絶対にドキンちゃんになる！絶対
-                  </p>
+                  <p>{target}</p>
                 </>
               }
             />

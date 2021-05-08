@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, Modal, Theme } from "@material-ui/core";
+import { createStyles, DialogContent, makeStyles, Modal, Theme } from "@material-ui/core";
 import React, { FC, forwardRef } from "react";
 import { MainMenu } from "../component/UIkit/organisms";
 
@@ -21,15 +21,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   open: boolean;
-  onClose: () => void;
+  handleToggle: () => void;
 };
 
-const MenuModal: FC<Props> = ({ open, onClose }) => {
+const MenuModal: FC<Props> = ({ open, handleToggle }) => {
   const classes = useStyles();
-  const RefMainMenu = React.forwardRef((props, ref) => <MainMenu forwardRef={ref} />);
+  const RefMainMenu = React.forwardRef((props, ref) => <MainMenu handleToggle={handleToggle} forwardRef={ref} />);
   return (
-    <Modal keepMounted open={open} onClose={() => onClose()} className={classes.modal}>
-      <RefMainMenu />
+    <Modal keepMounted open={open} onClose={handleToggle} className={classes.modal}>
+      <DialogContent>
+        <RefMainMenu />
+      </DialogContent>
     </Modal>
   );
 };

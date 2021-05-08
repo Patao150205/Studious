@@ -4,9 +4,10 @@ import React, { FC, useCallback, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, PrimaryText } from "../src/component/UIkit/molecules/index";
+import { PrimaryModal, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
 import { signUpWithEmailPassword } from "../src/Auth";
 import { useAppDispatch, useAppSelector } from "../src/features/hooks";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles(
   createStyles({
@@ -54,6 +55,7 @@ const Register: FC = () => {
 
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const toggleOpen = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen]);
@@ -82,7 +84,7 @@ const Register: FC = () => {
       toggleOpen();
       return;
     }
-    signUpWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen);
+    signUpWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen, router);
   };
 
   return (
@@ -93,14 +95,7 @@ const Register: FC = () => {
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
           <div className="module-spacer--medium" />
-          <img
-            src="/studious-logo.jpg"
-            alt="/studious-logo"
-            className="u-logo-img--general"
-            width="40px"
-            height="40px"
-          />
-          <h1 className="u-text-headline">STUDIOUS</h1>
+          <StudiousLogoVertical />
           <div className="module-spacer--very-small" />
           <h2 className="u-text-sub-headline">新規登録</h2>
           <div className="module-spacer--medium" />

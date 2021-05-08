@@ -4,8 +4,9 @@ import React, { FC, useCallback, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryModal, PrimaryText } from "../src/component/UIkit/molecules/index";
+import { PrimaryModal, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
 import { passwordResetWithEmail } from "../src/Auth";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles(
   createStyles({
@@ -47,6 +48,7 @@ const Reset: FC = () => {
   const [message, setMessage] = useState("");
 
   const classes = useStyles();
+  const router = useRouter();
   const {
     formState: { errors },
     control,
@@ -56,7 +58,7 @@ const Reset: FC = () => {
 
   const onSubmit = (data: any) => {
     const email = data.resetEmail;
-    passwordResetWithEmail(email, setTitle, setMessage, setIsOpen);
+    passwordResetWithEmail(email, setTitle, setMessage, setIsOpen, router);
     reset();
   };
 
@@ -71,14 +73,7 @@ const Reset: FC = () => {
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
           <div className="module-spacer--medium" />
-          <img
-            src="/studious-logo.jpg"
-            alt="/studious-logo"
-            className="u-logo-img--general"
-            width="40px"
-            height="40px"
-          />
-          <h1 className="u-text-headline">STUDIOUS</h1>
+          <StudiousLogoVertical />
           <div className="module-spacer--very-small" />
           <h2 className="u-text-sub-headline">パスワードのリセット</h2>
           <div className="module-spacer--medium" />
