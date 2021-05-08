@@ -1,28 +1,30 @@
 import { useRouter } from "next/router";
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { auth } from "../firebase/firebaseConfig";
 import { useAppDispatch } from "./features/hooks";
-import { fetchUserInfo } from "./features/usersSlice";
+import { fetchMyUserInfo } from "./features/usersSlice";
+import firebase from "firebase/app";
 
 const AuthObserver: FC = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const unauthenticated = ["/signin", "/signup", "/reset"];
+  const notNeedAuthenticated = ["/signin", "/signup", "/reset"];
+  const user = useState<firebase.User | null>(null);
+  const url = router.pathname;
 
   useEffect(() => {
-    const url = window.location.pathname;
-    if (unauthenticated.includes(url)) {
+    if (notNeedAuthenticated.includes(url)) {
       return;
     }
     auth.onAuthStateChanged((user) => {
       if (user) {
-        dispatch(fetchUserInfo(user.uid));
+        dispatch(fetchMyUserInfo(user.uid));
       } else {
         router.push("/signin");
       }
     });
-  }, []);
-  return <>{children}</>;
+  }, [url]);
+  return !user ? <></> : <>{children}</>;
 };
 
 export default AuthObserver;

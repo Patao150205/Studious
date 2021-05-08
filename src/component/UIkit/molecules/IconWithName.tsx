@@ -11,6 +11,11 @@ type Props = {
 
 const useStyles = makeStyles(
   createStyles({
+    root: {
+      maxWidth: 300,
+      widht: "100%",
+      wordBreak: "break-word",
+    },
     titleLogo: {
       width: 200,
       height: 200,
@@ -19,17 +24,32 @@ const useStyles = makeStyles(
       textAlign: "center",
       margin: "0 auto",
     },
+    profileName: {
+      fontSize: "1.6rem",
+    },
+    profileName__small: {
+      fontSize: "1.3rem",
+    },
   })
 );
 
 const IconWithName: FC<Props> = ({ name, src, alt, onClick }) => {
-  const router = useRouter();
   const classes = useStyles();
+
+  const changeFontsize = (): string => {
+    switch (!!name.length) {
+      case name.length <= 14:
+        return classes.profileName;
+      default:
+        return classes.profileName__small;
+    }
+  };
+
   return (
-    <div>
+    <div className={classes.root}>
       <Avatar src={src} alt={alt} className={`${classes.titleLogo}`} onClick={onClick} />
       <div className="module-spacer--small" />
-      <h1 className="u-text-headline">{name}</h1>
+      <h1 className={changeFontsize()}>{name}</h1>
     </div>
   );
 };

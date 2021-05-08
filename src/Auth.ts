@@ -1,6 +1,8 @@
 import { NextRouter } from "next/router";
-import { auth, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
-import { initialState, fetchUserInfo, updateProfile } from "./features/usersSlice";
+import { auth, db, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
+import { initialState, fetchMyUserInfo, updateMyInfo, updateIsSignin } from "./features/usersSlice";
+
+import React from "react";
 
 export const signUpWithEmailPassword = async (
   email: string,
@@ -8,7 +10,8 @@ export const signUpWithEmailPassword = async (
   password: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  router: NextRouter
 ) => {
   auth
     .createUserWithEmailAndPassword(email, password)
@@ -19,12 +22,15 @@ export const signUpWithEmailPassword = async (
       }
       const timestamp = FirebaseTimestamp.now();
       const data = {
-        ...initialState.myProfile,
+        ...initialState.myInfo,
         uid: user.uid,
         email: user.email ?? "",
         created_at: timestamp as any,
+        isSignin: true,
       };
-      dispatch(updateProfile(data));
+      dispatch(updateMyInfo(data)).then(() => {
+        router.push("/");
+      });
     })
     .catch((err) => {
       switch (err.code) {
@@ -55,7 +61,8 @@ export const signInWithEmailPassword = async (
   password: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
-  toggleOpen: () => void
+  toggleOpen: () => void,
+  router: NextRouter
 ) => {
   auth
     .signInWithEmailAndPassword(email, password)
@@ -64,7 +71,9 @@ export const signInWithEmailPassword = async (
       if (user === null) {
         throw new Error("ユーザ情報を取得できませんでした。");
       }
-      dispatch(fetchUserInfo(user.uid));
+      dispatch(fetchMyUserInfo(user.uid)).then(() => {
+        router.push("/");
+      });
     })
     .catch((err) => {
       switch (err.code) {
@@ -87,7 +96,8 @@ export const SignInWithTwitter = async (
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
   toggleOpen: () => void,
-  dispatch: any
+  dispatch: any,
+  router: NextRouter
 ) => {
   auth
     .signInWithPopup(TwitterProvider)
@@ -102,16 +112,21 @@ export const SignInWithTwitter = async (
       if (isNewUser) {
         const timestamp = FirebaseTimestamp.fromDate(new Date(user.metadata.creationTime as string));
         const data = {
-          ...initialState.myProfile,
+          ...initialState.myInfo,
           uid: user.uid,
           username: user.displayName,
           photoURL: user.photoURL,
           created_at: timestamp,
           sns_path: { twitter: `https://twitter.com/${TwitterUser?.username ?? "エラー"}`, GitHub: "" },
+          isSignin: true,
         };
-        dispatch(updateProfile(data));
+        dispatch(updateMyInfo(data)).then(() => {
+          router.push("/");
+        });
       } else {
-        dispatch(fetchUserInfo(user.uid));
+        dispatch(fetchMyUserInfo(user.uid)).then(() => {
+          router.push("/");
+        });
       }
     })
     .catch((err) => {
@@ -125,7 +140,8 @@ export const SignInWithGitHub = async (
   dispatch: any,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
-  toggleOpen: () => void
+  toggleOpen: () => void,
+  router: NextRouter
 ) => {
   auth
     .signInWithPopup(GitHubProvider)
@@ -140,16 +156,21 @@ export const SignInWithGitHub = async (
       if (isNewUser) {
         const timestamp = FirebaseTimestamp.fromDate(new Date(user.metadata.creationTime as string));
         const data = {
-          ...initialState.myProfile,
+          ...initialState.myInfo,
           uid: user.uid,
           username: GitHubUser.username,
           photoURL: user.photoURL,
           sns_path: { twitter: "", GitHub: GitHubUser.profile.html_url },
           created_at: timestamp,
+          isSignin: true,
         };
-        dispatch(updateProfile(data));
+        dispatch(updateMyInfo(data)).then(() => {
+          router.push("/");
+        });
       } else {
-        dispatch(fetchUserInfo(user.uid));
+        dispatch(fetchMyUserInfo(user.uid)).then(() => {
+          router.push("/");
+        });
       }
     })
     .catch((err) => {
@@ -168,9 +189,10 @@ export const SignInWithGitHub = async (
     });
 };
 
-export const logout = (router: NextRouter) => {
+export const logout = (router: NextRouter, uid: string, dispatch: any) => {
   auth.signOut().then(() => {
-    router.push("/signin");
+    dispatch(updateIsSignin(uid));
+    // router.push("/signin");
   });
 };
 
@@ -178,7 +200,8 @@ export const passwordResetWithEmail = async (
   email: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  router: NextRouter
 ) => {
   auth
     .sendPasswordResetEmail(email)
@@ -186,6 +209,7 @@ export const passwordResetWithEmail = async (
       setTitle("メールの送信に成功しました。");
       setMessage("メールを確認して、パスワードのリセットを行ってください。");
       setIsOpen(true);
+      router.push("/signin");
     })
     .catch((err) => {
       switch (err.code) {

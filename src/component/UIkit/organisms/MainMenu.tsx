@@ -15,14 +15,15 @@ const useStyles = makeStyles(
 
 type Props = {
   forwardRef?: React.Ref<any>;
+  handleToggle?: () => void;
 };
 
-const MainMenu: FC<Props> = ({ forwardRef }) => {
+const MainMenu: FC<Props> = ({ forwardRef, handleToggle }) => {
   const classes = useStyles();
 
   return (
     <div ref={forwardRef}>
-      <MenuList />
+      <MenuList handleToggle={handleToggle ?? (() => {})} />
       <div className={classes.root}>
         <PrimaryCard avatar={<FontAwesomeIcon icon={["far", "newspaper"]} />} title="ニュース" subTitle="News">
           Studiousリリース予定！!

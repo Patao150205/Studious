@@ -46,7 +46,7 @@ const HeaderIcons: FC = ({}) => {
           <FontAwesomeIcon icon={["fas", "bars"]} className={classes.icon} />
         </IconButton>
       </div>
-      <MenuModal open={barIsOpen} onClose={toggleBarButton} />
+      <MenuModal open={barIsOpen} handleToggle={toggleBarButton} />
     </>
   );
 };

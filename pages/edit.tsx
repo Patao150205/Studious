@@ -1,17 +1,25 @@
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Head from "next/head";
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
-import { PrimaryText } from "../src/component/UIkit/molecules/index";
+import { PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
+import { Avatar, Badge, Theme } from "@material-ui/core";
+import { useAppDispatch } from "../src/features/hooks";
+import { PartialUserInfo, updateMyInfo, userMyInfoSelector } from "../src/features/usersSlice";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import { storage } from "../firebase/firebaseConfig";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const useStyles = makeStyles(
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundImage: "url(img/books-1456513080510-7bf3a84b82f8.jpeg)",
       backgroundPosition: "center",
-      height: "100vh",
+      height: "140vh",
+      overflowY: "scroll",
       position: "relative",
     },
     card: {
@@ -25,6 +33,34 @@ const useStyles = makeStyles(
     form: {
       margin: "0 auto",
       maxWidth: 400,
+    },
+    filebtn: {
+      display: "none",
+      "& > label": {
+        position: "relative",
+      },
+    },
+    editIcon: {
+      position: "absolute",
+      background: theme.palette.primary.light,
+      borderRadius: "50%",
+      width: 50,
+      height: 50,
+      top: 130,
+      right: 30,
+      fontSize: 30,
+      cursor: "pointer",
+    },
+    profileLogo: {
+      margin: "0 auto",
+      width: 150,
+      height: 150,
+      objectFit: "cover",
+      objectPosition: "center",
+      cursor: "pointer",
+      "&:hover": {
+        opacity: "0.8",
+      },
     },
     textButton: {
       color: "#444",
@@ -40,17 +76,74 @@ const useStyles = makeStyles(
   })
 );
 
+type UplodedImg = {
+  id: string;
+  path: any;
+};
+
 const Reset: FC = () => {
   const classes = useStyles();
+  const selector = useSelector(userMyInfoSelector);
+
+  const [uploadedImg, setUploadedImg] = useState<UplodedImg>({ id: "", path: null });
+
   const {
     formState: { errors },
     control,
     handleSubmit,
     reset,
-  } = useForm({ mode: "onSubmit", reValidateMode: "onBlur", defaultValues: { username: "", freeField: "" } });
+  } = useForm({
+    mode: "onSubmit",
+    reValidateMode: "onBlur",
+    defaultValues: {
+      username: selector.username,
+      introduce: selector.introduce_myself,
+      TwitterURL: selector.sns_path.twitter,
+      GitHubURL: selector.sns_path.GitHub,
+      target: selector.target,
+    },
+  });
+
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const onSubmit = (data: any) => {
-    reset();
+    console.log(uploadedImg.path);
+    const newData: PartialUserInfo = {
+      uid: selector.uid,
+      photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
+      introduce_myself: data.introduce ?? "",
+      sns_path: { twitter: data.TwitterURL ?? "", GitHub: data.GitHubURL ?? "" },
+      target: data.target ?? "",
+      username: data.username,
+    };
+    dispatch(updateMyInfo(newData)).then(() => {
+      router.push("/");
+    });
+  };
+
+  const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    // ランダムな１６桁の文字列の生成
+    const S = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const N = 16;
+    const filename =
+      file?.name +
+      Array.from(crypto.getRandomValues(new Uint8Array(N)))
+        .map((n) => S[n % S.length])
+        .join("");
+    const uploadRef = storage.ref("usersIcon").child(filename);
+    const uploadedTask = uploadRef.put(file as File);
+    uploadedTask
+      .then(() => {
+        uploadedTask.snapshot.ref.getDownloadURL().then((DownloadURL) => {
+          const uploadedFile = { id: filename, path: DownloadURL };
+          setUploadedImg(uploadedFile);
+        });
+      })
+      .catch((e) => {
+        alert(`ファイルの読み込みに失敗しました。\n ${e.message}`);
+      });
   };
 
   return (
@@ -61,26 +154,38 @@ const Reset: FC = () => {
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
           <div className="module-spacer--medium" />
-          <img
-            src="/studious-logo.jpg"
-            alt="/studious-logo"
-            className="u-logo-img--general"
-            width="40px"
-            height="40px"
-          />
-          <h1 className="u-text-headline">STUDIOUS</h1>
+          <StudiousLogoVertical />
           <div className="module-spacer--very-small" />
           <h2 className="u-text-sub-headline">プロフィールの編集</h2>
           <div className="module-spacer--medium" />
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-            <div className="module-spacer--very-small" />
+            <label>
+              <input
+                className={classes.filebtn}
+                type="file"
+                onChange={(e) => {
+                  uploadImage(e);
+                }}
+              />
+              <Badge classes={{ badge: classes.editIcon }} badgeContent={<FontAwesomeIcon icon={["fas", "marker"]} />}>
+                <Avatar
+                  src={uploadedImg.path || selector.photoURL || "/img/noUserImage.jpg"}
+                  alt="プロフィール画像"
+                  className={classes.profileLogo}
+                />
+              </Badge>
+            </label>
+            <div className="module-spacer--small" />
             <PrimaryText
               control={control}
               errors={errors}
-              errorMessage="ユーザー名は１０文字以内で入力してください。"
-              rules={{}}
+              errorMessage="ユーザー名は、５０文字以下で入力してください。"
+              required={true}
+              rules={{
+                maxLength: 50,
+              }}
               label="username"
-              name="Username"
+              name="username"
               placeholder="ユーザー名"
               type="text"
             />
@@ -90,9 +195,52 @@ const Reset: FC = () => {
               multiline={true}
               required={false}
               label="free field(blackboard)"
-              name="freeField"
+              name="introduce"
               placeholder="自由記入欄(黒板)"
-              rows={5}
+              rows={3}
+              type="text"
+            />
+            <div className="module-spacer--very-small" />
+            <PrimaryText
+              control={control}
+              errors={errors}
+              errorMessage="TwitterのプロフィールページのURLを正しく入力してください。"
+              multiline={false}
+              required={false}
+              rules={{
+                pattern: /^(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)$/,
+              }}
+              label="Twitter URL"
+              name="TwitterURL"
+              placeholder="Twitter"
+              rows={1}
+              type="text"
+            />
+            <div className="module-spacer--very-small" />
+            <PrimaryText
+              control={control}
+              errors={errors}
+              errorMessage="GitHubのURLを正しく入力してください。"
+              multiline={false}
+              required={false}
+              rules={{
+                pattern: /^(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)$/,
+              }}
+              label="GitHub URL"
+              name="GitHubURL"
+              placeholder="GitHub"
+              rows={1}
+              type="text"
+            />
+            <div className="module-spacer--very-small" />
+            <PrimaryText
+              control={control}
+              multiline={true}
+              required={false}
+              label="target"
+              name="target"
+              placeholder="目標"
+              rows={3}
               type="text"
             />
             <div className="module-spacer--medium" />
