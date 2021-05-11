@@ -1,0 +1,15 @@
+.swiper-button-next {
+  color: #4bcb83;
+}
+
+.swiper-button-prev {
+  color: #4bcb83;
+}
+
+.swiper-container-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet {
+  color: #4bcb83;
+}
+
+.swiper-container {
+  width: 70%;
+}

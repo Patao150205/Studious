@@ -15,9 +15,12 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconWithName } from "../src/component/UIkit/molecules";
 import { useSelector } from "react-redux";
-import { userMyInfoSelector } from "../src/features/usersSlice";
+import { fetchMyUserInfo, userMyInfoSelector } from "../src/features/usersSlice";
 import HTMLReactParser from "html-react-parser";
 
+import { GetServerSideProps } from "next";
+import { store } from "../src/store";
+import { auth } from "../firebase/firebaseConfig";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -70,6 +73,16 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   // const uid = store.getState().users.myInfo.uid;
+//   const uid = auth.currentUser;
+//   console.log(uid);
+//   store.dispatch(fetchMyUserInfo(uid));
+//   return {
+//     props: {},
+//   };
+// };
 
 export default function Home() {
   const router = useRouter();

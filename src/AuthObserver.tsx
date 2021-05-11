@@ -17,13 +17,13 @@ const AuthObserver: FC = ({ children }) => {
       return;
     }
     auth.onAuthStateChanged((user) => {
-      if (user) {
-        dispatch(fetchMyUserInfo(user.uid));
-      } else {
+      if (!user) {
         router.push("/signin");
+      } else {
+        dispatch(fetchMyUserInfo(user.uid));
       }
     });
-  }, [url]);
+  }, []);
   return !user ? <></> : <>{children}</>;
 };
 

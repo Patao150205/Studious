@@ -1,6 +1,9 @@
 body {
   color: #444 !important;
   font-family: "メイリオ", sans-serif !important;
+  overflow: scroll;
+  min-height: 100vh;
+  height: auto;
 }
 
 /* スマホ */
@@ -61,6 +64,14 @@ body {
   text-align: center;
 }
 
+.u-text--left {
+  text-align: left;
+}
+
+.u-display--none {
+  display: none;
+}
+
 .center {
   margin: 0 auto;
 }
@@ -73,15 +84,15 @@ body {
   justify-content: center;
 }
 
+.p-grid-rows--space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
 .p-grid-rows--evenly {
   display: flex;
   justify-content: space-evenly;
-}
-
-.p-grid-rows--space-evenly {
-  display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
 }
 
 .p-grid-columns {
@@ -94,6 +105,28 @@ body {
   flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
+}
+
+.p-media-thumb {
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+}
+
+.p-media-thumb::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+.p-media-thumb > img {
+  position: absolute;
+  object-fit: cover;
+  object-position: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 /*タブレット*/
 @media (min-width: 600px) {

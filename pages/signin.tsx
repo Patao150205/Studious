@@ -131,9 +131,7 @@ const Register: FC = () => {
                 startIcon={<GitHubIcon />}
                 disabled={false}
                 onClick={() => {
-                  SignInWithGitHub(dispatch, setTitle, setMessage, toggleOpen, router).then(() => {
-                    router.push("/");
-                  });
+                  SignInWithGitHub(dispatch, setTitle, setMessage, toggleOpen, router);
                 }}
                 bgColor="#000"
                 fColor="#fff">
