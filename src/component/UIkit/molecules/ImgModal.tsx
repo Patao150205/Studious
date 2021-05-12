@@ -1,47 +1,55 @@
 import { DialogContent, Modal, Theme } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/styles";
-import Head from "next/head";
 import React, { FC } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Navigation, Pagination, EffectCoverflow, Scrollbar } from "swiper";
-SwiperCore.use([Navigation, Pagination, Scrollbar, EffectCoverflow]);
-
+import SwiperCore, { Navigation, Pagination, EffectCoverflow } from "swiper";
 import { UplodedImg } from "../../../../pages/edit";
+import Head from "next/head";
+
+SwiperCore.use([Navigation, Pagination, EffectCoverflow]);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
     swiperWrapper: {
       width: "70%",
-      // position: "absolute",
-      // top: "50%",
-      // left: "50%",
-      // transform: "translate(-50%, -50%)",
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      textAlign: "center",
     },
     img: {
-      width: "100%",
+      maxWidth: "100%",
+      "&:hover": {
+        opacity: "0.8",
+      },
     },
   })
 );
 
 type Props = {
-  path: string;
   isOpen: boolean;
   initialSlide: number;
   uploadedImg: UplodedImg[] | null;
   handleOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ImgModal: FC<Props> = ({ path, uploadedImg, isOpen, initialSlide, handleOpen }) => {
+const ImgModal: FC<Props> = ({ uploadedImg, isOpen, initialSlide, handleOpen }) => {
+  console.log(isOpen);
   const classes = useStyles();
   const Pictures = React.forwardRef((props, ref: any) => (
-    <div className={classes.swiperWrapper} ref={ref}>
+    <div {...props} ref={ref}>
+      <Head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.5.8/swiper-bundle.min.css" />
+      </Head>
       <Swiper
+        className={classes.swiperWrapper}
         spaceBetween={50}
-        navigation={true}
         slidesPerView={1}
-        loop
+        direction={"horizontal"}
+        navigation
         initialSlide={initialSlide}
+        loop
         pagination={{ clickable: true }}
         effect="coverflow">
         {uploadedImg?.map((img) => (
@@ -53,19 +61,13 @@ const ImgModal: FC<Props> = ({ path, uploadedImg, isOpen, initialSlide, handleOp
     </div>
   ));
   return (
-    <>
-      <Head>
-        <link rel="stylesheet" href="/styles/swiper-bundle.min.css" />
-        <link rel="stylesheet" href="/styles/swiper.css" />
-      </Head>
-      <div className={classes.root}>
-        <Modal open={isOpen} onClose={() => handleOpen(false)} keepMounted>
-          <DialogContent>
-            <Pictures />
-          </DialogContent>
-        </Modal>
-      </div>
-    </>
+    <div>
+      <Modal open={isOpen} onClose={() => handleOpen(false)} keepMounted>
+        <DialogContent>
+          <Pictures />
+        </DialogContent>
+      </Modal>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React, { FC, useEffect, useState } from "react";
 import { auth } from "../firebase/firebaseConfig";
 import { useAppDispatch } from "./features/hooks";
-import { fetchMyUserInfo } from "./features/usersSlice";
+import { fetchMyUserInfo, fetchUserRecord } from "./features/usersSlice";
 import firebase from "firebase/app";
 
 const AuthObserver: FC = ({ children }) => {
@@ -21,6 +21,7 @@ const AuthObserver: FC = ({ children }) => {
         router.push("/signin");
       } else {
         dispatch(fetchMyUserInfo(user.uid));
+        dispatch(fetchUserRecord(user.uid));
       }
     });
   }, []);

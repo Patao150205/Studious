@@ -1,20 +1,19 @@
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Head from "next/head";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { ImgModal, InputTime, PrimaryText, StudiousLogoVertical } from "../../src/component/UIkit/molecules";
-import { NumSelector, PrimaryButton, PrimaryCard } from "../../src/component/UIkit/atoms";
-import { useAppDispatch } from "../../src/features/hooks";
-import { updateMyRecord, userRecordSelector } from "../../src/features/usersSlice";
-import { Divider, List, ListItem } from "@material-ui/core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { auth, db, FirebaseTimestamp, storage } from "../../firebase/firebaseConfig";
-import { UplodedImg } from "../edit";
-import { processedTime } from "../../src/component/UIkit/molecules/InputTime";
-import UploadPictureButton from "../../src/component/UIkit/atoms/UploadPictureButton";
+import { ImgModal, InputTime, PrimaryText, StudiousLogoVertical } from "../../../src/component/UIkit/molecules";
+import { NumSelector, PrimaryButton } from "../../../src/component/UIkit/atoms";
+import { useAppDispatch } from "../../../src/features/hooks";
+import { updateMyRecord } from "../../../src/features/usersSlice";
+import { Divider } from "@material-ui/core";
+import { auth, FirebaseTimestamp } from "../../../firebase/firebaseConfig";
+import { UplodedImg } from "../../edit";
+import { processedTime } from "../../../src/component/UIkit/molecules/InputTime";
+import UploadPictureButton from "../../../src/component/UIkit/atoms/UploadPictureButton";
+import { LearningList } from "../../../src/component/UIkit/organisms";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -29,47 +28,21 @@ const useStyles = makeStyles((theme: any) =>
       backgroundColor: "rgba(255, 255, 255, 0.7)",
       boxShadow: "0px 5px 5px 1px rgba(0, 0, 0, .2)",
     },
-    form: {
-      margin: "0 auto",
-      maxWidth: 400,
-    },
     target: {
       color: "red",
     },
-    list: {
-      paddingTop: 0,
-    },
-    listItem: {
-      marginTop: 15,
-      background: theme.palette.primary[100],
-      display: "flex",
-      flexFlow: "column",
-    },
-    listItemTitle: {
-      color: "red",
-      textAlign: "center",
-    },
-    icons: {
-      margin: "0 10px",
-      fontSize: 20,
-      "&:hover": {
-        color: theme.palette.primary[500],
-        cursor: "pointer",
-        opacity: "0.8",
-      },
-    },
-    pencil: {
-      marginRight: 15,
+    form: {
+      margin: "0 auto",
+      maxWidth: 400,
     },
     link: {
       color: "#444",
       textDecoration: "none",
     },
-    thumb: {},
   })
 );
 
-type Registration =
+export type Registration =
   | {
       learningContent: string;
       hours: number;
@@ -78,7 +51,7 @@ type Registration =
     }[]
   | [];
 
-type FormContents = {
+export type FormContents = {
   comment?: string;
   convertedToMinutes: number;
   doneDate?: string;
@@ -96,7 +69,6 @@ const Reset: FC = () => {
   const [sumedTime, setSumedTime] = useState<number>(0);
   const [uploadedImg, setUploadedImg] = useState<UplodedImg[] | null>([]);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
-  const [showedImg, setShowedImg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [clickedIndex, setClickedIndex] = useState<number>(0);
 
@@ -148,6 +120,7 @@ const Reset: FC = () => {
         });
         console.log(registration);
         setTarget(null);
+        reset();
         return;
       }
       const convertedToMinutes = formContent.hours * 60 + formContent.minutes;
@@ -181,13 +154,14 @@ const Reset: FC = () => {
         updated_at: FirebaseTimestamp.now(),
         uid: auth.currentUser?.uid,
         username: auth.currentUser?.displayName,
+        userIcon: auth.currentUser?.photoURL,
       };
-      console.log(sendData);
 
       dispatch(updateMyRecord(sendData)).then(() => {
         router.push("/record");
       });
       setIsSubmit(true);
+      reset();
     },
     [sumedTime, registration, uploadedImg]
   );
@@ -226,25 +200,6 @@ const Reset: FC = () => {
     [registration, target]
   );
 
-  const showImg = useCallback((path: string) => {
-    setShowedImg(path);
-    setIsOpen(true);
-  }, []);
-
-  const postImgRef = storage.ref("postImg");
-  // useEffect(() => {
-  //   return () => {
-  //     console.log(isSubmit);
-  //     console.log(uploadedImg);
-  //     isSubmit ||
-  //       uploadedImg?.forEach((ele) => {
-  //         postImgRef.child(ele.id).delete();
-  //       });
-  //     console.log("ごララマちょお");
-  //   };
-  // }, [isSubmit, uploadedImg]);
-
-  console.log(uploadedImg);
   return (
     <>
       <Head>
@@ -291,32 +246,11 @@ const Reset: FC = () => {
           </form>
           <div className="module-spacer--small" />
           <div className={`${classes.form}`}>
-            <PrimaryCard title="学習内容一覧" subTitle="learning list">
-              <List className={classes.list}>
-                {registration.map((ele: FormContents) => {
-                  return (
-                    <ListItem key={ele.learningContent} className={classes.listItem}>
-                      <p className={classes.listItemTitle}>{ele.learningContent}</p>
-                      <div className="module-spacer--very-small" />
-                      <p>{`${ele.hours} h ${ele.minutes} m`}</p>
-                      <div className="module-spacer--very-small" />
-                      <div>
-                        <FontAwesomeIcon
-                          className={`classes.pencil ${classes.icons}`}
-                          icon={["fas", "pencil-alt"]}
-                          onClick={() => editLearnedEle(ele.learningContent)}
-                        />
-                        <FontAwesomeIcon
-                          className={classes.icons}
-                          icon={["fas", "trash"]}
-                          onClick={() => deleteLearnedEle(ele.learningContent)}
-                        />
-                      </div>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </PrimaryCard>
+            <LearningList
+              registration={registration}
+              editLearnedEle={editLearnedEle}
+              deleteLearnedEle={deleteLearnedEle}
+            />
           </div>
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
             <div className="module-spacer--medium" />
@@ -334,17 +268,16 @@ const Reset: FC = () => {
               rows={3}
               type="text"
             />
-
             <div className="module-spacer--small" />
             <UploadPictureButton uploadedImg={uploadedImg} setUploadedImg={setUploadedImg} />
             <div className="module-spacer--small" />
-            {uploadedImg?.[0] && <h1>プレビュー</h1> &&
+            {uploadedImg?.[0] &&
               uploadedImg.map((ele, index) => (
                 <div key={ele.id}>
                   <div
-                    className={`p-media-thumb ${classes.thumb}`}
+                    className={`p-media-thumb`}
                     onClick={() => {
-                      showImg(ele.path);
+                      setIsOpen(true);
                       setClickedIndex(index);
                     }}>
                     <img src={ele.path} alt="投稿画像" />
@@ -365,13 +298,7 @@ const Reset: FC = () => {
           </Link>
           <div className="module-spacer--small" />
         </section>
-        <ImgModal
-          initialSlide={clickedIndex}
-          path={showedImg}
-          uploadedImg={uploadedImg}
-          isOpen={isOpen}
-          handleOpen={setIsOpen}
-        />
+        <ImgModal initialSlide={clickedIndex} uploadedImg={uploadedImg} isOpen={isOpen} handleOpen={setIsOpen} />
       </div>
     </>
   );

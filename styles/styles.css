@@ -113,6 +113,10 @@ body {
   width: 100%;
 }
 
+.p-media-thumb:hover {
+  opacity: 0.8;
+}
+
 .p-media-thumb::before {
   content: "";
   display: block;

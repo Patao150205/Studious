@@ -15,12 +15,9 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconWithName } from "../src/component/UIkit/molecules";
 import { useSelector } from "react-redux";
-import { fetchMyUserInfo, userMyInfoSelector } from "../src/features/usersSlice";
+import { userMyInfoSelector } from "../src/features/usersSlice";
 import HTMLReactParser from "html-react-parser";
 
-import { GetServerSideProps } from "next";
-import { store } from "../src/store";
-import { auth } from "../firebase/firebaseConfig";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -74,22 +71,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   // const uid = store.getState().users.myInfo.uid;
-//   const uid = auth.currentUser;
-//   console.log(uid);
-//   store.dispatch(fetchMyUserInfo(uid));
-//   return {
-//     props: {},
-//   };
-// };
-
 export default function Home() {
   const router = useRouter();
   const classes = useStyles();
   const selector = useSelector(userMyInfoSelector);
   const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
   const target = HTMLReactParser(selector.target.replace(/\n/g, "<br />"));
+  const status = selector.statisticalData;
 
   return (
     <>
@@ -112,7 +100,7 @@ export default function Home() {
               <div className="p-grid-rows--center">
                 <SecondaryButton
                   startIcon={<TwitterIcon />}
-                  disabled={false}
+                  disabled={selector.sns_path.twitter ? false : true}
                   onClick={() => {
                     window.location.href = selector.sns_path.twitter;
                   }}
@@ -123,7 +111,7 @@ export default function Home() {
                 <div className="module-spacer--very-small" />
                 <SecondaryButton
                   startIcon={<GitHubIcon />}
-                  disabled={false}
+                  disabled={selector.sns_path.GitHub ? false : true}
                   onClick={() => {
                     window.location.href = selector.sns_path.GitHub;
                   }}
@@ -146,13 +134,13 @@ export default function Home() {
                 <>
                   <p>初回ログイン日: {selector.created_at}</p>
                   <br />
-                  <p>投稿日数 : 323 (日)</p>
+                  <p>投稿日数 : {status.totalPostDay} (日)</p>
                   <br />
-                  <p>総学習時間 : 889 (時間)</p>
+                  <p>総学習時間 : {status.totalTime} (時間)</p>
                   <br />
-                  <p>平均学習時間 : 82 (時間/週間)</p>
+                  <p>平均学習時間 : {status.averageTimePerWeek} (時間/週間)</p>
                   <br />
-                  <p>平均学習時間 : 5 (時間/日)</p>
+                  <p>平均学習時間 : {status.averageTimePerDay} (時間/日)</p>
                   <br />
                 </>
               </PrimaryCard>

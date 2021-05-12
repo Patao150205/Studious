@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/reset.css";
-// import "../styles/swiper-bundle.min.css";
-// import "../styles/swiper.css";
 import "../styles/styles.css";
+import "../styles/swiper.css";
 import "../src/fontawesome";
 import PropTypes from "prop-types";
 import Head from "next/head";

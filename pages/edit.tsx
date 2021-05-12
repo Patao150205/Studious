@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Head from "next/head";
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
@@ -54,6 +54,7 @@ const Reset: FC = () => {
     formState: { errors },
     control,
     handleSubmit,
+    setValue,
   } = useForm({
     mode: "onSubmit",
     reValidateMode: "onBlur",
@@ -83,6 +84,14 @@ const Reset: FC = () => {
       router.push("/");
     });
   }, []);
+
+  useEffect(() => {
+    setValue("username", selector.username);
+    setValue("introduce", selector.introduce_myself);
+    setValue("TwitterURL", selector.sns_path.twitter);
+    setValue("GitHubURL", selector.sns_path.GitHub);
+    setValue("target", selector.target);
+  }, [selector]);
 
   return (
     <>

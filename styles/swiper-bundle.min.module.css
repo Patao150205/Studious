@@ -1,5 +1,5 @@
-/**
- * Swiper 6.5.9
+/* *
+ * Swiper 6.5.8
  * Most modern mobile touch slider and framework with hardware accelerated transitions
  * https://swiperjs.com
  *
@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: April 30, 2021
+ * Released on: April 23, 2021
  */
 
 @font-face {
@@ -336,7 +336,8 @@ button.swiper-pagination-bullet {
 .swiper-scrollbar {
   border-radius: 10px;
   position: relative;
-  -ms-touch-action: none;
+
+  :none ;
   background: rgba(0, 0, 0, 0.1);
 }
 .swiper-container-horizontal > .swiper-scrollbar {

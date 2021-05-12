@@ -1,215 +1,76 @@
-import {
-  Avatar,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  CardMedia,
-  createStyles,
-  Divider,
-  IconButton,
-  makeStyles,
-} from "@material-ui/core";
 import Head from "next/head";
-import React from "react";
+import React, { useCallback } from "react";
 import { useAppDispatch } from "../../src/features/hooks";
-import { useRouter } from "next/router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
+import { deleteUserRecord, UserRecord, userRecordSelector } from "../../src/features/usersSlice";
+import { PostCard } from "../../src/component/UIkit/organisms/index";
+import { createStyles, makeStyles } from "@material-ui/styles";
+import { Theme } from "@material-ui/core";
+import Link from "next/link";
 
-const useStyles = makeStyles((theme: any) =>
+export type HandleDelete = {
+  uid: string;
+  recordId: string;
+  newPosts: UserRecord[];
+};
+
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
-    card: {
-      textAlign: "left",
-      margin: "5vh auto",
-      lineHeight: "1.6rem",
-    },
-    cardHeader: {
-      fontSize: 30,
-      "&:hover": {
-        backgroundColor: theme.palette.grey[100],
-        cursor: "pointer",
-        opacity: "0.8",
-      },
-      [theme.breakpoints.down("sm")]: {
-        fontSize: 25,
-      },
-    },
-    cardMedia: {
-      width: "100%",
-      height: "auto",
-    },
-    favoriteBtn: {
-      fontSize: 30,
-      margin: "0 auto",
-      cursor: "pointer",
-    },
-    pencil: {
-      margin: "15px 20px 0 0",
-      "&:hover": {
-        color: theme.palette.primary[500],
-        cursor: "pointer",
-        opacity: "0.8",
-      },
-    },
-    trash: {
-      "&:hover": {
-        color: theme.palette.primary[500],
-        cursor: "pointer",
-        opacity: "0.8",
-      },
+    noPostRoot: {
+      position: "absolute",
+      transform: "translate(-50%, -50%)",
+      top: "50%",
+      left: "50%",
     },
   })
 );
 
 const Record = () => {
-  const classes = useStyles();
+  const selector = useSelector(userRecordSelector);
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const classes = useStyles();
 
+  const handleEdit = useCallback((uid: string, recordId: string) => {
+    // dispatch();
+  }, []);
+  console.log(selector);
+  const handleDelete = useCallback(
+    (uid: string, recordId: string) => {
+      const isPost = confirm("本当に投稿を削除してよろしいでしょうか？");
+      if (isPost) {
+        const newPosts = selector.filter((ele: UserRecord) => ele.recordId !== recordId);
+        const query = {
+          uid,
+          recordId,
+          newPosts,
+        };
+        dispatch(deleteUserRecord(query));
+      }
+    },
+    [selector]
+  );
   return (
     <>
       <Head>
         <title>STUDIOUS 学習記録</title>
       </Head>
-      <section className={`c-section-wrapping--main ${classes.root}`}>
-        <Card className={`c-section-container ${classes.card}`}>
-          <CardHeader
-            className={classes.cardHeader}
-            avatar={<Avatar src="/noUserImage.jpg" />}
-            title="ぱたお"
-            onClick={() => {}}
-            action={
-              <>
-                <FontAwesomeIcon className={classes.pencil} icon={["fas", "pencil-alt"]} />
-                <FontAwesomeIcon className={classes.trash} icon={["fas", "trash"]} />
-              </>
-            }></CardHeader>
-          <CardContent>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-          </CardContent>
-          <Divider />
-          <CardContent>
-            まだダミーデータだけど、インデックスページのUIが構築できました！
-            iPhoneSE(旧)のサイズを基準にしてるから、どのスマホでも画面崩れが起こらないはず
-            コンポーネント分割しっかりやってると使い回しがきいて楽目がハートの笑顔
-          </CardContent>
-
-          <CardMedia component="img" className={classes.cardMedia} src="/noUserImage.jpg" title="ゴリラ" />
-          <CardActions>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "comments"]} />
-            </IconButton>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "heart"]} />
-            </IconButton>
-          </CardActions>
-        </Card>
-        <Card className={`c-section-container ${classes.card}`}>
-          <CardHeader
-            className={classes.cardHeader}
-            avatar={<Avatar src="/noUserImage.jpg" />}
-            title="ぱたお"
-            onClick={() => {}}
-            action={
-              <>
-                <FontAwesomeIcon className={classes.pencil} icon={["fas", "pencil-alt"]} />
-                <FontAwesomeIcon className={classes.trash} icon={["fas", "trash"]} />
-              </>
-            }></CardHeader>
-          <CardContent>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-          </CardContent>
-          <Divider />
-          <CardContent>
-            まだダミーデータだけど、インデックスページのUIが構築できました！
-            iPhoneSE(旧)のサイズを基準にしてるから、どのスマホでも画面崩れが起こらないはず
-            コンポーネント分割しっかりやってると使い回しがきいて楽目がハートの笑顔
-          </CardContent>
-
-          <CardMedia component="img" className={classes.cardMedia} src="/noUserImage.jpg" title="ゴリラ" />
-          <CardActions>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "comments"]} />
-            </IconButton>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "heart"]} />
-            </IconButton>
-          </CardActions>
-        </Card>
-        <Card className={`c-section-container ${classes.card}`}>
-          <CardHeader
-            className={classes.cardHeader}
-            avatar={<Avatar src="/noUserImage.jpg" />}
-            title="ぱたお"
-            onClick={() => {}}
-            action={
-              <>
-                <FontAwesomeIcon className={classes.pencil} icon={["fas", "pencil-alt"]} />
-                <FontAwesomeIcon className={classes.trash} icon={["fas", "trash"]} />
-              </>
-            }></CardHeader>
-          <CardContent>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-          </CardContent>
-          <Divider />
-          <CardContent>
-            まだダミーデータだけど、インデックスページのUIが構築できました！
-            iPhoneSE(旧)のサイズを基準にしてるから、どのスマホでも画面崩れが起こらないはず
-            コンポーネント分割しっかりやってると使い回しがきいて楽目がハートの笑顔
-          </CardContent>
-
-          <CardMedia component="img" className={classes.cardMedia} src="/noUserImage.jpg" title="ゴリラ" />
-          <CardActions>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "comments"]} />
-            </IconButton>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "heart"]} />
-            </IconButton>
-          </CardActions>
-        </Card>
-        <Card className={`c-section-container ${classes.card}`}>
-          <CardHeader
-            className={classes.cardHeader}
-            avatar={<Avatar src="/noUserImage.jpg" />}
-            title="ぱたお"
-            onClick={() => {}}
-            action={
-              <>
-                <FontAwesomeIcon className={classes.pencil} icon={["fas", "pencil-alt"]} />
-                <FontAwesomeIcon className={classes.trash} icon={["fas", "trash"]} />
-              </>
-            }></CardHeader>
-          <CardContent>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-            <p>✅ JavaScript 1h 15m</p>
-          </CardContent>
-          <Divider />
-          <CardContent>
-            まだダミーデータだけど、インデックスページのUIが構築できました！
-            iPhoneSE(旧)のサイズを基準にしてるから、どのスマホでも画面崩れが起こらないはず
-            コンポーネント分割しっかりやってると使い回しがきいて楽目がハートの笑顔
-          </CardContent>
-
-          <CardMedia component="img" className={classes.cardMedia} src="/noUserImage.jpg" title="ゴリラ" />
-          <CardActions>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "comments"]} />
-            </IconButton>
-            <IconButton className={classes.favoriteBtn}>
-              <FontAwesomeIcon icon={["fas", "heart"]} />
-            </IconButton>
-          </CardActions>
-        </Card>
-      </section>
+      {selector.length !== 0 ? (
+        <>
+          <section className={`c-section-wrapping--main`}>
+            {selector.map((post) => (
+              <PostCard handleEdit={handleEdit} handleDelete={handleDelete} key={post.recordId} post={post} />
+            ))}
+          </section>
+        </>
+      ) : (
+        <div className={`${classes.noPostRoot} c-section-container`}>
+          <h1>投稿がありません。作成してみよう！</h1>
+          <div className="module-spacer--medium" />
+          <Link href="/record/edit">
+            <a>投稿作成ページへ</a>
+          </Link>
+        </div>
+      )}
     </>
   );
 };
