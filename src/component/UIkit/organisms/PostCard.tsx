@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Avatar,
+  Badge,
   Card,
   CardActions,
   CardContent,
@@ -11,10 +12,10 @@ import {
   IconButton,
   makeStyles,
 } from "@material-ui/core";
-import HTMLReactParser from "html-react-parser";
 import { useRouter } from "next/router";
-import React, { FC, useState } from "react";
-import { auth } from "../../../../firebase/firebaseConfig";
+import React, { FC, useCallback, useState } from "react";
+import { useSelector } from "react-redux";
+import { CommentArea } from ".";
 import { UplodedImg } from "../../../../pages/edit";
 import { UserRecord } from "../../../features/usersSlice";
 import { ImgModal } from "../molecules";
@@ -28,6 +29,7 @@ const useStyles = makeStyles((theme: any) =>
     },
     cardHeader: {
       fontSize: 30,
+      paddingBottom: 0,
       [theme.breakpoints.down("sm")]: {
         fontSize: 25,
       },
@@ -67,6 +69,10 @@ const useStyles = makeStyles((theme: any) =>
       justifyContent: "space-between",
       flexWrap: "wrap",
     },
+    thumbSingle: {
+      width: "50%",
+      margin: "0 auto",
+    },
     thumb: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fit, minmax(calc(50% - 5px), 1fr))",
@@ -85,18 +91,21 @@ const useStyles = makeStyles((theme: any) =>
 
 type Props = {
   post: UserRecord;
-  handleEdit: (uid: string, recordId: string) => void;
   handleDelete: (uid: string, recordId: string) => void;
 };
 
-const PostCard: FC<Props> = ({ post, handleEdit, handleDelete }) => {
+const PostCard: FC<Props> = ({ post, handleDelete }) => {
   const classes = useStyles();
   const router = useRouter();
 
-  const comment = HTMLReactParser(post.comment.replace("\n", "<br />"));
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenComments, setIsOpenComments] = useState(false);
   const [uploadedImg] = useState<UplodedImg[] | null>(post.images);
   const [clickedIndex, setClickIndex] = useState(0);
+
+  const toggleCommentsOpen = useCallback(() => {
+    setIsOpenComments(!isOpenComments);
+  }, [isOpenComments]);
 
   return (
     <div>
@@ -111,9 +120,12 @@ const PostCard: FC<Props> = ({ post, handleEdit, handleDelete }) => {
             />
           }
           title={
-            <p onClick={() => router.push("/")} className={classes.username}>
-              {post.username}
-            </p>
+            <>
+              <p onClick={() => router.push("/")} className={classes.username}>
+                {post.username}
+              </p>
+              <p>{post.created_at}</p>
+            </>
           }
           action={
             <>
@@ -142,9 +154,11 @@ const PostCard: FC<Props> = ({ post, handleEdit, handleDelete }) => {
               </div>
             );
           })}
+          <div className="module-spacer--very-small" />
+          <Divider />
+          <div className="module-spacer--very-small" />
+          <p>{post.ownComment}</p>
         </CardContent>
-        <Divider />
-        <CardContent>{comment}</CardContent>
         <div className={classes.thumb}>
           {post.images.map((img, index) => (
             <div key={img.id}>
@@ -153,7 +167,7 @@ const PostCard: FC<Props> = ({ post, handleEdit, handleDelete }) => {
                   component="img"
                   onClick={() => {
                     setClickIndex(index);
-                    setIsOpen(true);
+                    setIsModalOpen(true);
                   }}
                   src={img.path ? img.path : "/noImg.png"}
                   title="投稿画像"
@@ -164,15 +178,34 @@ const PostCard: FC<Props> = ({ post, handleEdit, handleDelete }) => {
           ))}
         </div>
         <CardActions>
-          <IconButton className={classes.favoriteBtn}>
-            <FontAwesomeIcon icon={["fas", "comments"]} />
+          <IconButton className={classes.favoriteBtn} onClick={toggleCommentsOpen}>
+            <Badge max={999} badgeContent={post.othersComments?.comments.length} color="primary">
+              <FontAwesomeIcon icon={["fas", "comments"]} />
+            </Badge>
           </IconButton>
           <IconButton className={classes.favoriteBtn}>
-            <FontAwesomeIcon icon={["fas", "heart"]} />
+            <Badge max={999} badgeContent={4} color="primary">
+              <FontAwesomeIcon icon={["fas", "heart"]} />
+            </Badge>
           </IconButton>
         </CardActions>
+        {isOpenComments && (
+          <>
+            <CommentArea
+              comments={post.othersComments?.comments ?? []}
+              recordId={post.recordId}
+              recordAuthorUid={post.uid}
+            />
+            <div className="module-spacer--very-small" />
+          </>
+        )}
       </Card>
-      <ImgModal initialSlide={clickedIndex} uploadedImg={uploadedImg} isOpen={isOpen} handleOpen={setIsOpen} />
+      <ImgModal
+        initialSlide={clickedIndex}
+        uploadedImg={uploadedImg}
+        isOpen={isModalOpen}
+        handleOpen={setIsModalOpen}
+      />
     </div>
   );
 };

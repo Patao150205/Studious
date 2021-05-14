@@ -1,8 +1,8 @@
 import Head from "next/head";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useAppDispatch } from "../../src/features/hooks";
 import { useSelector } from "react-redux";
-import { deleteUserRecord, UserRecord, userRecordSelector } from "../../src/features/usersSlice";
+import { deleteUserRecord, reflectRecordData, UserRecord, userRecordSelector } from "../../src/features/usersSlice";
 import { PostCard } from "../../src/component/UIkit/organisms/index";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core";
@@ -30,10 +30,6 @@ const Record = () => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
 
-  const handleEdit = useCallback((uid: string, recordId: string) => {
-    // dispatch();
-  }, []);
-  console.log(selector);
   const handleDelete = useCallback(
     (uid: string, recordId: string) => {
       const isPost = confirm("本当に投稿を削除してよろしいでしょうか？");
@@ -49,6 +45,8 @@ const Record = () => {
     },
     [selector]
   );
+
+  console.log(selector);
   return (
     <>
       <Head>
@@ -58,7 +56,7 @@ const Record = () => {
         <>
           <section className={`c-section-wrapping--main`}>
             {selector.map((post) => (
-              <PostCard handleEdit={handleEdit} handleDelete={handleDelete} key={post.recordId} post={post} />
+              <PostCard handleDelete={handleDelete} key={post.recordId} post={post} />
             ))}
           </section>
         </>

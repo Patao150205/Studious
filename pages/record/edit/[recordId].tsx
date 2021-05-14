@@ -36,6 +36,14 @@ const useStyles = makeStyles((theme: any) =>
       margin: "0 auto",
       maxWidth: 400,
     },
+    imgGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(calc(50% - 5px), 1fr))",
+      gap: 10,
+      [theme.breakpoints.up("sm")]: {
+        gridTemplateColumns: "repeat(auto-fit, minmax(calc(33% - 10px), 1fr))",
+      },
+    },
     link: {
       color: "#444",
       textDecoration: "none",
@@ -53,7 +61,7 @@ export type Registration =
   | [];
 
 export type FormContents = {
-  comment?: string;
+  ownComment?: string;
   convertedToMinutes: number;
   doneDate?: string;
   hours: number;
@@ -89,7 +97,7 @@ const Reset: FC = () => {
     reValidateMode: "onBlur",
     defaultValues: {
       learningContent: "",
-      comment: "",
+      ownComment: "",
       hours: 0,
       minutes: 0,
       doneDate: processedTime,
@@ -146,14 +154,14 @@ const Reset: FC = () => {
         return;
       }
 
-      console.log(editTargetPost?.created_at);
       const sendData = {
         created_at: FirebaseTimestamp.fromDate(new Date(editTargetPost?.created_at)),
-        comment: data.comment,
+        ownComment: data.ownComment,
         doneDate: data.doneDate,
         learning_content: registration,
         sumedTime: sumedTime,
         images: uploadedImg,
+        isNew: false,
         updated_at: FirebaseTimestamp.now(),
         uid: editTargetPost?.uid,
         username: editTargetPost?.username,
@@ -208,7 +216,7 @@ const Reset: FC = () => {
   useEffect(() => {
     setRegistration(editTargetPost?.learning_content ?? []);
     setUploadedImg(editTargetPost?.images ?? []);
-    setValue("comment", editTargetPost?.comment ?? "");
+    setValue("ownComment", editTargetPost?.ownComment ?? "");
     setValue("doneDate", editTargetPost?.doneDate ?? processedTime);
   }, [editTargetPost]);
 
@@ -275,7 +283,7 @@ const Reset: FC = () => {
               multiline={true}
               required={false}
               label="comment"
-              name="comment"
+              name="ownComment"
               placeholder="コメント"
               rows={3}
               type="text"
@@ -283,20 +291,22 @@ const Reset: FC = () => {
             <div className="module-spacer--small" />
             <UploadPictureButton uploadedImg={uploadedImg} setUploadedImg={setUploadedImg} />
             <div className="module-spacer--small" />
-            {uploadedImg?.[0] &&
-              uploadedImg.map((ele, index) => (
-                <div key={ele.id}>
-                  <div
-                    className={`p-media-thumb`}
-                    onClick={() => {
-                      setIsOpen(true);
-                      setClickedIndex(index);
-                    }}>
-                    <img src={ele.path} alt="投稿画像" />
+            <div className={classes.imgGrid}>
+              {uploadedImg?.[0] &&
+                uploadedImg.map((ele, index) => (
+                  <div key={ele.id}>
+                    <div
+                      className={`p-media-thumb`}
+                      onClick={() => {
+                        setIsOpen(true);
+                        setClickedIndex(index);
+                      }}>
+                      <img src={ele.path} alt="投稿画像" />
+                    </div>
+                    <div className="module-spacer--very-small" />
                   </div>
-                  <div className="module-spacer--very-small" />
-                </div>
-              ))}
+                ))}
+            </div>
             <div className="module-spacer--small" />
             <div className="p-grid-columns">
               <PrimaryButton submit={true} color="primary" disabled={false}>

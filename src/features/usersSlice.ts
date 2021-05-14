@@ -1,12 +1,16 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { db } from "../../firebase/firebaseConfig";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { auth, db } from "../../firebase/firebaseConfig";
 import { UplodedImg } from "../../pages/edit";
 import { HandleDelete } from "../../pages/record";
+import { Comment, SendCommentsData } from "../component/UIkit/organisms/commentArea";
 import { RootState } from "../store";
 
 //Thunk
 export const updateMyInfo: any = createAsyncThunk("user/updateMyInfo", async (data: PartialUserInfo, thunk) => {
   const uid = data.uid;
+  auth.currentUser?.updateProfile({
+    displayName: data.username,
+  });
   await db.collection("users").doc(uid).set(data, { merge: true });
   //Redux用にキャストする
   data.created_at && (data.created_at = data.created_at.toDate().toLocaleDateString());
@@ -33,24 +37,6 @@ export const updateMyRecord: any = createAsyncThunk("user/updateMyRecord", async
     data.isNew = false;
     await db.collection("users").doc(data.uid).collection("userRecords").doc(data.recordId).set(data, { merge: true });
   }
-  data.created_at = data.created_at.toDate().toLocaleString();
-  data.updated_at = data.updated_at.toDate().toLocaleString();
-  console.log(data.updated_at);
-  return data;
-});
-
-export const fetchUserRecord: any = createAsyncThunk("user/fetchUserRecord", async (uid: string, thunk) => {
-  const recordRef = db.collection("users").doc(uid).collection("userRecords");
-  const postDatas: any = [];
-  await recordRef.get().then((res) => {
-    res.forEach((ele) => {
-      const data = ele.data();
-      data.created_at = data.created_at.toDate().toLocaleString();
-      data.updated_at = data.updated_at.toDate().toLocaleString();
-      postDatas.push(data);
-    });
-  });
-  return postDatas;
 });
 
 export const deleteUserRecord: any = createAsyncThunk(
@@ -60,6 +46,26 @@ export const deleteUserRecord: any = createAsyncThunk(
     return newPosts;
   }
 );
+
+export const sendPostComment: any = createAsyncThunk("user/sendPostComment", async (data: SendCommentsData, thunk) => {
+  await db
+    .collection("users")
+    .doc(data.recordAuthorUid)
+    .collection("userRecords")
+    .doc(data.recordId)
+    .set({ othersComments: data }, { merge: true });
+  const convertedData = data.comments.map((comment) => {
+    if (comment.created_at.seconds) {
+      comment.created_at = comment.created_at.toDate().toLocaleString();
+    }
+    return comment;
+  });
+  console.log(convertedData);
+  data.comments = convertedData;
+  return data;
+});
+
+export const deletePostComment: any = createAsyncThunk("user/sendPostComment", async (data, thunk) => {});
 
 export const updateIsSignin: any = createAsyncThunk("user/updateIsSignin", async (uid: string, thunk) => {
   uid && (await db.collection("users").doc(uid).set({ isSignin: false }, { merge: true }));
@@ -78,7 +84,6 @@ type UserInfo = {
   photoURL: string;
   postCount: number;
   sns_path: { twitter: string; GitHub: string };
-  statisticalData: { totalTime: number; totalPostDay: number; averageTimePerWeek: number; averageTimePerDay: number };
   target: string;
   uid: string;
   username: string;
@@ -86,7 +91,8 @@ type UserInfo = {
 export type UserRecord = {
   recordId: string;
   created_at: any;
-  comment: string;
+  ownComment: string;
+  othersComments?: SendCommentsData;
   doneDate: string;
   learning_content: [{ learningContent: string; hours: number; minutes: number; convertedToMinutes: number }];
   images: UplodedImg[];
@@ -115,7 +121,6 @@ export const initialState: UserState = {
     postCount: 0,
     role: "User",
     sns_path: { twitter: "", GitHub: "" },
-    statisticalData: { totalTime: 0, totalPostDay: 0, averageTimePerWeek: 0, averageTimePerDay: 0 },
     target: "",
     uid: "",
     username: "",
@@ -124,7 +129,8 @@ export const initialState: UserState = {
     {
       recordId: "",
       created_at: null,
-      comment: "",
+      ownComment: "",
+      othersComments: { comments: [], recordAuthorUid: "", recordId: "" },
       doneDate: "",
       learning_content: [{ learningContent: "", hours: 0, minutes: 0, convertedToMinutes: 0 }],
       images: [],
@@ -141,13 +147,17 @@ export const initialState: UserState = {
 const usersSlice = createSlice({
   name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    reflectRecordData: (state, action) => {
+      console.log(action.payload);
+      state.myRecords = action.payload;
+    },
+  },
   extraReducers: {
     [updateMyInfo.fulfilled]: (state, action) => {
       state.myInfo = {
         ...action.payload,
       };
-      console.log(state.myInfo);
     },
     [updateMyInfo.rejected]: () => {
       alert("ユーザ情報の更新に失敗しました。");
@@ -158,33 +168,28 @@ const usersSlice = createSlice({
     [fetchMyUserInfo.rejected]: () => {
       alert("ユーザー情報の取得に失敗しました。");
     },
-    [updateMyRecord.fulfilled]: (state, action) => {
-      if (action.payload.isNew) {
-        state.myRecords.push(action.payload);
-      } else {
-        const data = state.myRecords.map((post) => {
-          if (post.recordId === action.payload.recordId) {
-            post = action.payload;
-          }
-          return post;
-        });
-        state.myRecords = data;
-      }
-    },
     [updateMyRecord.rejected]: (state, action) => {
       alert("投稿データの作成に失敗しました。");
-    },
-    [fetchUserRecord.fulfilled]: (state, action) => {
-      state.myRecords = action.payload;
-    },
-    [fetchUserRecord.rejected]: (state, action) => {
-      alert("投稿データの取得に失敗しました。");
     },
     [deleteUserRecord.fulfilled]: (state, action) => {
       state.myRecords = action.payload;
     },
     [deleteUserRecord.rejected]: (state, action) => {
       alert("投稿の削除に失敗しました");
+    },
+    [sendPostComment.fulfilled]: (state, action: PayloadAction<SendCommentsData>) => {
+      const recordId = action.payload.recordId;
+      console.log(action.payload);
+      state.myRecords.find((record) => {
+        if (record.recordId === recordId) {
+          record.othersComments = action.payload;
+          console.log(record.othersComments);
+          return true;
+        }
+      });
+    },
+    [sendPostComment.rejected]: (state, action) => {
+      alert("コメントの送信に失敗しました。");
     },
     [updateIsSignin.fulfilled]: (state, action) => {
       state.myInfo.isSignin = false;
@@ -197,6 +202,6 @@ export const userMyInfoSelector = (state: RootState) => state.users.myInfo;
 export const userRecordSelector = (state: RootState) => state.users.myRecords;
 export const userIsSinginSelector = (state: RootState) => state.users.myInfo.isSignin;
 
-export const {} = usersSlice.actions;
+export const { reflectRecordData } = usersSlice.actions;
 
 export default usersSlice.reducer;

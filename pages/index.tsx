@@ -77,7 +77,7 @@ export default function Home() {
   const selector = useSelector(userMyInfoSelector);
   const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
   const target = HTMLReactParser(selector.target.replace(/\n/g, "<br />"));
-  const status = selector.statisticalData;
+  // const status = selector.statisticalData;
 
   return (
     <>
@@ -134,14 +134,14 @@ export default function Home() {
                 <>
                   <p>初回ログイン日: {selector.created_at}</p>
                   <br />
-                  <p>投稿日数 : {status.totalPostDay} (日)</p>
+                  {/* <p>投稿日数 : {status.totalPostDay} (日)</p>
                   <br />
                   <p>総学習時間 : {status.totalTime} (時間)</p>
                   <br />
                   <p>平均学習時間 : {status.averageTimePerWeek} (時間/週間)</p>
                   <br />
                   <p>平均学習時間 : {status.averageTimePerDay} (時間/日)</p>
-                  <br />
+                  <br /> */}
                 </>
               </PrimaryCard>
             </div>
