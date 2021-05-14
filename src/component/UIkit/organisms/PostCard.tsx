@@ -14,7 +14,6 @@ import {
 } from "@material-ui/core";
 import { useRouter } from "next/router";
 import React, { FC, useCallback, useState } from "react";
-import { useSelector } from "react-redux";
 import { CommentArea } from ".";
 import { UplodedImg } from "../../../../pages/edit";
 import { UserRecord } from "../../../features/usersSlice";
