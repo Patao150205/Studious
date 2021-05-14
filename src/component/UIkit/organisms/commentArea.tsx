@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { PrimaryText } from "../molecules";
 import { PrimaryButton } from "../atoms";
-import { Avatar, CardHeader, CardContent } from "@material-ui/core";
+import { Avatar, CardHeader, CardContent, Divider } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch } from "../../../features/hooks";
 import { sendPostComment } from "../../../features/usersSlice";
@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     root: {
       background: "#eee",
+    },
+    commentsField: {
+      maxHeight: 500,
+      overflowY: "scroll",
     },
     form: {
       margin: "0 auto",
@@ -128,40 +132,43 @@ const CommentArea: FC<SendCommentsData> = ({ comments, recordAuthorUid, recordId
 
   return (
     <div className={classes.root}>
-      {comments?.map((comment) => (
-        <div key={comment.commentId}>
-          <CardHeader
-            className={classes.cardHeader}
-            avatar={
-              <Avatar
-                onClick={() => router.push("/")}
-                className={classes.userIcon}
-                src={comment.userIcon ? comment.userIcon : "/noUserImage.jpg"}
-              />
-            }
-            title={
-              <>
-                <p onClick={() => router.push("/")} className={classes.username}>
-                  {comment.username}
-                </p>
-                <p>{comment.created_at}</p>
-              </>
-            }
-            action={
-              <>
-                <FontAwesomeIcon
-                  onClick={() => handleDelete(comment.commentId)}
-                  className={classes.trash}
-                  icon={["fas", "trash"]}
+      <div className={classes.commentsField}>
+        {comments?.map((comment) => (
+          <div key={comment.commentId}>
+            <CardHeader
+              className={classes.cardHeader}
+              avatar={
+                <Avatar
+                  onClick={() => router.push("/")}
+                  className={classes.userIcon}
+                  src={comment.userIcon ? comment.userIcon : "/noUserImage.jpg"}
                 />
-              </>
-            }
-          />
-          <CardContent>
-            <p>{comment.content}</p>
-          </CardContent>
-        </div>
-      ))}
+              }
+              title={
+                <>
+                  <p onClick={() => router.push("/")} className={classes.username}>
+                    {comment.username}
+                  </p>
+                  <p>{comment.created_at}</p>
+                </>
+              }
+              action={
+                <>
+                  <FontAwesomeIcon
+                    onClick={() => handleDelete(comment.commentId)}
+                    className={classes.trash}
+                    icon={["fas", "trash"]}
+                  />
+                </>
+              }
+            />
+            <CardContent>
+              <p>{comment.content}</p>
+            </CardContent>
+          </div>
+        ))}
+      </div>
+      <Divider />
       <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
         <div className="module-spacer--very-small" />
         <PrimaryText

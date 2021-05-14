@@ -13,8 +13,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useRouter } from "next/router";
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { CommentArea } from ".";
+import { auth, db } from "../../../../firebase/firebaseConfig";
 import { UplodedImg } from "../../../../pages/edit";
 import { UserRecord } from "../../../features/usersSlice";
 import { ImgModal } from "../molecules";
@@ -85,6 +86,9 @@ const useStyles = makeStyles((theme: any) =>
       margin: "0 auto",
       cursor: "pointer",
     },
+    good: {
+      color: "red",
+    },
   })
 );
 
@@ -101,10 +105,41 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
   const [isOpenComments, setIsOpenComments] = useState(false);
   const [uploadedImg] = useState<UplodedImg[] | null>(post.images);
   const [clickedIndex, setClickIndex] = useState(0);
+  const [isGood, setIsGood] = useState(false);
 
   const toggleCommentsOpen = useCallback(() => {
     setIsOpenComments(!isOpenComments);
   }, [isOpenComments]);
+
+  const toggleIsGood = () => {
+    if (auth.currentUser) {
+      const uid = auth.currentUser?.uid;
+      if (isGood) {
+        const data = post.goodHeart.filter((ele) => ele.uid !== uid);
+        db.collection("users")
+          .doc(post.uid)
+          .collection("userRecords")
+          .doc(post.recordId)
+          .set({ goodHeart: data }, { merge: true });
+      } else {
+        const username = auth.currentUser.displayName ?? "取得できませんでした";
+        const userIcon = auth.currentUser.photoURL ?? "取得できませんでした";
+        const data = { uid, username, userIcon };
+        const sendData = post.goodHeart?.[0] ? [...post.goodHeart, data] : [data];
+        db.collection("users")
+          .doc(post.uid)
+          .collection("userRecords")
+          .doc(post.recordId)
+          .set({ goodHeart: sendData }, { merge: true });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const uid = auth.currentUser?.uid;
+    const isFound = post.goodHeart?.some((ele) => ele.uid === uid);
+    setIsGood(isFound);
+  }, [post.goodHeart]);
 
   return (
     <div>
@@ -182,8 +217,8 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
               <FontAwesomeIcon icon={["fas", "comments"]} />
             </Badge>
           </IconButton>
-          <IconButton className={classes.favoriteBtn}>
-            <Badge max={999} badgeContent={4} color="primary">
+          <IconButton className={`${classes.favoriteBtn} ${isGood && classes.good}`} onClick={toggleIsGood}>
+            <Badge max={999} badgeContent={post.goodHeart?.length} color="primary">
               <FontAwesomeIcon icon={["fas", "heart"]} />
             </Badge>
           </IconButton>

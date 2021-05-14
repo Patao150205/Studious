@@ -89,12 +89,13 @@ type UserInfo = {
   username: string;
 };
 export type UserRecord = {
-  recordId: string;
   created_at: any;
+  doneDate: string;
+  goodHeart: [{ uid: string; username: string; userIcon: string }] | [];
+  recordId: string;
+  learning_content: [{ learningContent: string; hours: number; minutes: number; convertedToMinutes: number }];
   ownComment: string;
   othersComments?: SendCommentsData;
-  doneDate: string;
-  learning_content: [{ learningContent: string; hours: number; minutes: number; convertedToMinutes: number }];
   images: UplodedImg[];
   isNew: boolean;
   sumedTime: number;
@@ -129,10 +130,11 @@ export const initialState: UserState = {
     {
       recordId: "",
       created_at: null,
+      doneDate: "",
+      goodHeart: [],
+      learning_content: [{ learningContent: "", hours: 0, minutes: 0, convertedToMinutes: 0 }],
       ownComment: "",
       othersComments: { comments: [], recordAuthorUid: "", recordId: "" },
-      doneDate: "",
-      learning_content: [{ learningContent: "", hours: 0, minutes: 0, convertedToMinutes: 0 }],
       images: [],
       isNew: true,
       sumedTime: 0,
