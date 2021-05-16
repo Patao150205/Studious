@@ -57,8 +57,8 @@ const Record = () => {
 
   const limitCount = 3;
   useEffect(() => {
+    const unsubscribes: any = [];
     if (user) {
-      console.log("よしこ");
       //初期データ取得
       db.collection("users")
         .doc(user.uid)
@@ -76,30 +76,38 @@ const Record = () => {
           dispatch(reflectRecordData(postsData));
         });
       //最初のレコード
-      db.collection("users")
-        .doc(user.uid)
-        .collection("userRecords")
-        .orderBy("created_at", "desc")
-        .limit(1)
-        .get()
-        .then((snapshot) => {
-          const data: any = snapshot.docs[0].data();
-          parseDataToDate(data);
-          setFirstRecord(data);
-        });
+      unsubscribes.push(
+        db
+          .collection("users")
+          .doc(user.uid)
+          .collection("userRecords")
+          .orderBy("created_at", "desc")
+          .limit(1)
+          .onSnapshot((snapshot) => {
+            const data: any = snapshot.docs[0].data();
+            parseDataToDate(data);
+            setFirstRecord(data);
+          })
+      );
       //最後のレコード
-      db.collection("users")
-        .doc(user.uid)
-        .collection("userRecords")
-        .orderBy("created_at", "desc")
-        .limitToLast(1)
-        .get()
-        .then((snapshot) => {
-          const data: any = snapshot.docs[0].data();
-          parseDataToDate(data);
-          setLastRecord(data);
-        });
+      unsubscribes.push(
+        db
+          .collection("users")
+          .doc(user.uid)
+          .collection("userRecords")
+          .orderBy("created_at", "desc")
+          .limitToLast(1)
+          .onSnapshot((snapshot) => {
+            const data: any = snapshot.docs[0].data();
+            parseDataToDate(data);
+            setLastRecord(data);
+          })
+      );
     }
+    return () =>
+      unsubscribes.forEach((unsub: any) => {
+        unsub();
+      });
   }, []);
 
   useEffect(() => {
