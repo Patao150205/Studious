@@ -1,12 +1,14 @@
 import Head from "next/head";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "../../src/features/hooks";
 import { useSelector } from "react-redux";
 import { deleteUserRecord, reflectRecordData, UserRecord, userRecordSelector } from "../../src/features/usersSlice";
 import { PostCard } from "../../src/component/UIkit/organisms/index";
 import { createStyles, makeStyles } from "@material-ui/styles";
-import { Theme } from "@material-ui/core";
+import { IconButton, Theme } from "@material-ui/core";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { auth, db, FirebaseTimestamp } from "../../firebase/firebaseConfig";
 
 export type HandleDelete = {
   uid: string;
@@ -25,10 +27,152 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+function parseDataToDate(data: UserRecord) {
+  if (data.created_at.seconds) {
+    data.created_at = data.created_at.toDate().toLocaleString();
+    data.updated_at = data.updated_at.toDate().toLocaleString();
+  }
+  if (data.othersComments?.comments) {
+    data.othersComments.comments.map((comment) => {
+      if (comment.created_at.seconds) {
+        comment.created_at = comment.created_at.toDate().toLocaleString();
+      }
+    });
+  }
+}
+
 const Record = () => {
-  const selector = useSelector(userRecordSelector);
+  const user = auth.currentUser;
   const dispatch = useAppDispatch();
+  const selector = useSelector(userRecordSelector);
   const classes = useStyles();
+  //前後のレコードを保持
+  const [currentFirstRecord, setCurrentFirstRecord] = useState<any>(null);
+  const [currentLastRecord, setCurrentLastRecord] = useState<any>(null);
+  //一番最初と最後のレコードを保持
+  const [firstRecord, setFirstRecord] = useState<any>();
+  const [lastRecord, setLastRecord] = useState<any>();
+  const [hasPrevPage, setHasPrevPage] = useState(true);
+  const [hasNextPage, setHasNextPage] = useState(true);
+
+  const limitCount = 3;
+  useEffect(() => {
+    if (user) {
+      console.log("よしこ");
+      //初期データ取得
+      db.collection("users")
+        .doc(user.uid)
+        .collection("userRecords")
+        .orderBy("created_at", "desc")
+        .limit(limitCount)
+        .get()
+        .then((snapshot) => {
+          const postsData: UserRecord[] = [];
+          snapshot.forEach((doc: any) => {
+            const data = doc.data();
+            parseDataToDate(data);
+            postsData.push(data);
+          });
+          dispatch(reflectRecordData(postsData));
+        });
+      //最初のレコード
+      db.collection("users")
+        .doc(user.uid)
+        .collection("userRecords")
+        .orderBy("created_at", "desc")
+        .limit(1)
+        .get()
+        .then((snapshot) => {
+          const data: any = snapshot.docs[0].data();
+          parseDataToDate(data);
+          setFirstRecord(data);
+        });
+      //最後のレコード
+      db.collection("users")
+        .doc(user.uid)
+        .collection("userRecords")
+        .orderBy("created_at", "desc")
+        .limitToLast(1)
+        .get()
+        .then((snapshot) => {
+          const data: any = snapshot.docs[0].data();
+          parseDataToDate(data);
+          setLastRecord(data);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (lastRecord && selector) {
+      if (selector.length > 0) {
+        setHasNextPage(true);
+        selector.forEach((item) => {
+          if (item.recordId === lastRecord.recordId) {
+            setHasNextPage(false);
+          }
+        });
+        setCurrentLastRecord(selector.slice(-1)[0]);
+      }
+    }
+
+    if (firstRecord && selector) {
+      if (selector.length > 0) {
+        console.log(selector);
+        setHasPrevPage(true);
+        selector.forEach((item) => {
+          if (item.recordId === firstRecord.recordId) {
+            console.log(item.recordId);
+            setHasPrevPage(false);
+          }
+        });
+        setCurrentFirstRecord(selector[0]);
+      }
+    }
+  }, [firstRecord, lastRecord, selector]);
+
+  console.log(firstRecord);
+  console.log(lastRecord);
+  console.log(currentFirstRecord);
+  console.log(currentLastRecord);
+  console.log(hasNextPage);
+  console.log(hasPrevPage);
+
+  const handleNext = () => {
+    db.collection("users")
+      .doc(user?.uid)
+      .collection("userRecords")
+      .orderBy("created_at", "desc")
+      .startAfter(FirebaseTimestamp.fromDate(new Date(currentLastRecord.created_at)))
+      .limit(limitCount)
+      .get()
+      .then((snapshot) => {
+        const postsData: UserRecord[] = [];
+        snapshot.forEach((doc: any) => {
+          const data = doc.data();
+          parseDataToDate(data);
+          postsData.push(data);
+        });
+        dispatch(reflectRecordData(postsData));
+      });
+  };
+  const handlePrev = () => {
+    db.collection("users")
+      .doc(user?.uid)
+      .collection("userRecords")
+      .orderBy("created_at", "desc")
+      .endBefore(FirebaseTimestamp.fromDate(new Date(currentFirstRecord.created_at)))
+      .limitToLast(limitCount)
+      .get()
+      .then((snapshot) => {
+        const postsData: UserRecord[] = [];
+        snapshot.forEach((doc: any) => {
+          const data = doc.data();
+          parseDataToDate(data);
+          postsData.push(data);
+        });
+        dispatch(reflectRecordData(postsData));
+      });
+  };
 
   const handleDelete = useCallback(
     (uid: string, recordId: string) => {
@@ -46,18 +190,23 @@ const Record = () => {
     [selector]
   );
 
-  console.log(selector);
   return (
     <>
       <Head>
         <title>STUDIOUS 学習記録</title>
       </Head>
-      {selector.length !== 0 ? (
+      {selector?.length !== 0 ? (
         <>
           <section className={`c-section-wrapping--main`}>
-            {selector.map((post) => (
+            {selector?.map((post) => (
               <PostCard handleDelete={handleDelete} key={post.recordId} post={post} />
             ))}
+            <IconButton disabled={!hasPrevPage} onClick={handlePrev}>
+              <FontAwesomeIcon icon={["fas", "chevron-left"]} />
+            </IconButton>
+            <IconButton disabled={!hasNextPage} onClick={handleNext}>
+              <FontAwesomeIcon icon={["fas", "chevron-right"]} />
+            </IconButton>
           </section>
         </>
       ) : (

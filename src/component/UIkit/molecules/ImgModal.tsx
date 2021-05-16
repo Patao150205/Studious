@@ -35,7 +35,6 @@ type Props = {
 };
 
 const ImgModal: FC<Props> = ({ uploadedImg, isOpen, initialSlide, handleOpen }) => {
-  console.log(isOpen);
   const classes = useStyles();
   const Pictures = React.forwardRef((props, ref: any) => (
     <div {...props} ref={ref}>

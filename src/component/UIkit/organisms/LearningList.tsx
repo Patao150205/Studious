@@ -43,7 +43,6 @@ type Props = {
 
 const LearningList: FC<Props> = ({ registration, editLearnedEle, deleteLearnedEle }) => {
   const classes = useStyles();
-  console.log(registration);
   return (
     <PrimaryCard title="学習内容一覧" subTitle="learning list">
       <List className={classes.list}>

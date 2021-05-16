@@ -85,7 +85,6 @@ const Reset: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [clickedIndex, setClickedIndex] = useState<number>(0);
 
-  console.log(editTargetPost);
   const {
     control,
     formState: { errors },
@@ -212,7 +211,6 @@ const Reset: FC = () => {
     [registration, target]
   );
 
-  console.log(editTargetPost);
   useEffect(() => {
     setRegistration(editTargetPost?.learning_content ?? []);
     setUploadedImg(editTargetPost?.images ?? []);
@@ -315,7 +313,7 @@ const Reset: FC = () => {
             </div>
           </form>
           <div className="module-spacer--medium" />
-          <Link href="/">
+          <Link href="/record">
             <a className={classes.link}>学習記録投稿一覧に戻る</a>
           </Link>
           <div className="module-spacer--small" />

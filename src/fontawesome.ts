@@ -3,6 +3,8 @@ import { faNewspaper, faBell } from "@fortawesome/free-regular-svg-icons";
 import {
   faAddressBook,
   faBars,
+  faChevronLeft,
+  faChevronRight,
   faComments,
   faEdit,
   faGraduationCap,
@@ -23,6 +25,8 @@ library.add(
   faBars,
   faBell,
   faComments,
+  faChevronLeft,
+  faChevronRight,
   faUserCircle,
   faEdit,
   faGraduationCap,

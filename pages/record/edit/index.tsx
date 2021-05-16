@@ -125,7 +125,6 @@ const Reset: FC = () => {
             return true;
           }
         });
-        console.log(registration);
         setTarget(null);
         reset();
         return;
@@ -164,7 +163,6 @@ const Reset: FC = () => {
         username: auth.currentUser?.displayName,
         userIcon: auth.currentUser?.photoURL,
       };
-      console.log(auth.currentUser?.displayName + "こんにちは");
       dispatch(updateMyRecord(sendData)).then(() => {
         router.push("/record");
       });
@@ -303,7 +301,7 @@ const Reset: FC = () => {
             </div>
           </form>
           <div className="module-spacer--medium" />
-          <Link href="/">
+          <Link href="/record">
             <a className={classes.link}>学習記録投稿一覧に戻る</a>
           </Link>
           <div className="module-spacer--small" />

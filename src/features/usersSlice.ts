@@ -14,7 +14,6 @@ export const updateMyInfo: any = createAsyncThunk("user/updateMyInfo", async (da
   await db.collection("users").doc(uid).set(data, { merge: true });
   //Redux用にキャストする
   data.created_at && (data.created_at = data.created_at.toDate().toLocaleDateString());
-  console.log("1");
   return data;
 });
 
@@ -28,7 +27,6 @@ export const fetchMyUserInfo: any = createAsyncThunk("user/fetchMyUserInfo", asy
 });
 
 export const updateMyRecord: any = createAsyncThunk("user/updateMyRecord", async (data: PartialUserRecord, thunk) => {
-  console.log(data);
   if (!data.recordId) {
     const recordRef = db.collection("users").doc(data.uid).collection("userRecords").doc();
     data.recordId = recordRef.id;
@@ -60,7 +58,6 @@ export const sendPostComment: any = createAsyncThunk("user/sendPostComment", asy
     }
     return comment;
   });
-  console.log(convertedData);
   data.comments = convertedData;
   return data;
 });
@@ -151,7 +148,6 @@ const usersSlice = createSlice({
   initialState,
   reducers: {
     reflectRecordData: (state, action) => {
-      console.log(action.payload);
       state.myRecords = action.payload;
     },
   },
@@ -181,11 +177,9 @@ const usersSlice = createSlice({
     },
     [sendPostComment.fulfilled]: (state, action: PayloadAction<SendCommentsData>) => {
       const recordId = action.payload.recordId;
-      console.log(action.payload);
       state.myRecords.find((record) => {
         if (record.recordId === recordId) {
           record.othersComments = action.payload;
-          console.log(record.othersComments);
           return true;
         }
       });

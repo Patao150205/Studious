@@ -29,7 +29,6 @@ const UploadPictureButton: FC<Props> = ({ uploadedImg, setUploadedImg }) => {
           canvas: true,
         });
         canvas.image.toBlob((blob: Blob) => {
-          console.log(blob);
           const uploadRef = storage.ref("postImg").child(filename);
           const uploadedTask = uploadRef.put(blob);
           uploadedTask
