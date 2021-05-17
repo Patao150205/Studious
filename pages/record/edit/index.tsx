@@ -4,14 +4,19 @@ import React, { FC, useCallback, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { ImgModal, InputTime, PrimaryText, StudiousLogoVertical } from "../../../src/component/UIkit/molecules";
+import {
+  ImgModal,
+  InputTime,
+  PrimaryModal,
+  PrimaryText,
+  StudiousLogoVertical,
+} from "../../../src/component/UIkit/molecules";
 import { NumSelector, PrimaryButton } from "../../../src/component/UIkit/atoms";
 import { useAppDispatch } from "../../../src/features/hooks";
 import { updateMyRecord } from "../../../src/features/usersSlice";
-import { Divider } from "@material-ui/core";
-import { auth, FirebaseTimestamp } from "../../../firebase/firebaseConfig";
+import { Divider, Switch } from "@material-ui/core";
+import { auth, db, FirebaseTimestamp } from "../../../firebase/firebaseConfig";
 import { UplodedImg } from "../../edit";
-import { processedTime } from "../../../src/component/UIkit/molecules/InputTime";
 import UploadPictureButton from "../../../src/component/UIkit/atoms/UploadPictureButton";
 import { LearningList } from "../../../src/component/UIkit/organisms";
 
@@ -69,22 +74,34 @@ export type FormContents = {
   index?: number;
 };
 
+const timeNow = FirebaseTimestamp.now().toDate().toLocaleDateString();
 const Reset: FC = () => {
   const classes = useStyles();
 
+  //編集の対象
   const [target, setTarget] = useState<string | null>(null);
+  //学習記録の登録
   const [registration, setRegistration] = useState<Registration>([]);
   const [sumedTime, setSumedTime] = useState<number>(0);
   const [uploadedImg, setUploadedImg] = useState<UplodedImg[] | null>([]);
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>(0);
+  const [doneDate, setDoneDate] = useState<string>(timeNow);
+
+  //画像のスライドショー
+  const [isSlideOpen, setIsSlideOpen] = useState(false);
+  //確認のモーダル
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const toggleModalOpen = useCallback(() => {
+    setIsModalOpen(!isModalOpen);
+  }, [isModalOpen]);
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    reset,
     setValue,
   } = useForm({
     mode: "onSubmit",
@@ -94,11 +111,18 @@ const Reset: FC = () => {
       ownComment: "",
       hours: 0,
       minutes: 0,
-      doneDate: processedTime,
     },
   });
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const handleModeChange = useCallback(() => {
+    setIsChecked(!isChecked);
+  }, [isChecked]);
+
+  const onRegisterDoneDate = useCallback((event) => {
+    setDoneDate(event.target.value);
+  }, []);
 
   const onRegister = useCallback(
     (formContent: FormContents) => {
@@ -126,7 +150,9 @@ const Reset: FC = () => {
           }
         });
         setTarget(null);
-        reset();
+        setValue("learningContent", "", { shouldValidate: true });
+        setValue("hours", 0);
+        setValue("minutes", 0);
         return;
       }
       const convertedToMinutes = formContent.hours * 60 + formContent.minutes;
@@ -138,38 +164,90 @@ const Reset: FC = () => {
       };
       setRegistration((prev: any) => [...prev, data]);
       setSumedTime((prev: number) => prev + convertedToMinutes);
-      reset();
+      setValue("learningContent", "", { shouldValidate: true });
+      setValue("hours", 0);
+      setValue("minutes", 0);
     },
     [registration, setRegistration, target, setTarget]
   );
 
   const onSubmit = useCallback(
-    (data: FormContents) => {
-      if (sumedTime >= 1440) {
-        alert("一日２４時間以上勉強しています！！正しく入力してください。");
-        return;
-      }
+    async (data: FormContents) => {
+      const convertedDoneDate = new Date(doneDate).setHours(0, 0, 0, 0);
+      if (isChecked) {
+        //投稿できる日付の範囲を絞る
+        //2020/1/1〜次の日未満
+        const begin = new Date(2020, 0, 1).getTime();
+        const [year, month, date] = timeNow.split("/").map((ele) => Number(ele));
+        const end = new Date(year, month - 1, date + 1).getTime();
+        if (!(begin <= convertedDoneDate && convertedDoneDate < end)) {
+          setModalTitle("学習記録の登録エラー");
+          setModalContent("学習記録に登録できるのは、2020/1/1から、今日までの日付のみです。");
+          toggleModalOpen();
+          return;
+        }
 
-      const sendData = {
-        created_at: FirebaseTimestamp.now(),
-        ownComment: data.ownComment,
-        doneDate: data.doneDate,
-        learning_content: registration,
-        sumedTime: sumedTime,
-        images: uploadedImg,
-        isNew: true,
-        updated_at: FirebaseTimestamp.now(),
-        uid: auth.currentUser?.uid,
-        username: auth.currentUser?.displayName,
-        userIcon: auth.currentUser?.photoURL,
-      };
-      dispatch(updateMyRecord(sendData)).then(() => {
-        router.push("/record");
-      });
-      setIsSubmit(true);
-      reset();
+        if (sumedTime >= 1440) {
+          setModalTitle("学習記録の登録エラー");
+          setModalContent("一日２４時間以上勉強しています！正しい時間を入力してください。");
+          toggleModalOpen();
+          return;
+        }
+        const uid = auth.currentUser?.uid;
+        const doneDate = FirebaseTimestamp.fromMillis(convertedDoneDate);
+        //学習記録を同じ日付に重複して、登録するのを防ぐ
+        const hasData = await db
+          .collection("users")
+          .doc(uid)
+          .collection("userRecords")
+          .where("doneDate", "==", doneDate)
+          .get();
+        //データが空出なかったらアラートを表示
+        if (!hasData.empty) {
+          setModalTitle("学習記録の重複");
+          setModalContent(
+            `学習記録は一日一回だけしか投稿することができません。既に${new Date(
+              convertedDoneDate
+            ).toLocaleDateString()}の投稿は存在しています！`
+          );
+          toggleModalOpen();
+          return;
+        }
+        const sendData = {
+          created_at: FirebaseTimestamp.now(),
+          ownComment: data.ownComment,
+          doneDate,
+          learning_content: registration,
+          sumedTime: sumedTime,
+          images: uploadedImg,
+          isLearningRecord: true,
+          isNew: true,
+          updated_at: FirebaseTimestamp.now(),
+          uid,
+          username: auth.currentUser?.displayName,
+          userIcon: auth.currentUser?.photoURL,
+        };
+        dispatch(updateMyRecord(sendData)).then(() => {
+          router.push("/record");
+        });
+      } else {
+        const sendData = {
+          created_at: FirebaseTimestamp.now(),
+          ownComment: data.ownComment,
+          images: uploadedImg,
+          isLearningRecord: false,
+          isNew: true,
+          updated_at: FirebaseTimestamp.now(),
+          uid: auth.currentUser?.uid,
+          username: auth.currentUser?.displayName,
+          userIcon: auth.currentUser?.photoURL,
+        };
+        dispatch(updateMyRecord(sendData)).then(() => {
+          router.push("/record");
+        });
+      }
     },
-    [sumedTime, registration, uploadedImg]
+    [doneDate, sumedTime, registration, uploadedImg, toggleModalOpen, isChecked]
   );
 
   const editLearnedEle = useCallback(
@@ -209,60 +287,72 @@ const Reset: FC = () => {
   return (
     <>
       <Head>
-        <title>STUDIOUS 学習記録の作成</title>
+        <title>STUDIOUS 学習記録・投稿の作成</title>
       </Head>
       <div className={classes.root}>
         <section className={`c-section-container ${classes.card}`}>
           <div className="module-spacer--medium" />
           <StudiousLogoVertical />
           <div className="module-spacer--very-small" />
-          <h2 className="u-text-sub-headline">学習記録の作成</h2>
+          <h2 className="u-text-sub-headline">{isChecked ? "学習記録の作成" : "投稿の作成"}</h2>
           <div className="module-spacer--medium" />
-          <form className={classes.form} onSubmit={handleSubmit(onRegister)}>
-            {target && <p className={classes.target}>{`${target} を編集中`}</p>}
-            <div className="module-spacer--small" />
-            <PrimaryText
-              control={control}
-              errors={errors}
-              errorMessage="学習内容は、５０文字以下で入力してください。"
-              required={false}
-              rules={{
-                maxLength: 50,
-              }}
-              label="learningContent"
-              name="learningContent"
-              placeholder="学習内容"
-              type="text"
-            />
-            <div className="module-spacer--small" />
-            <div className="p-grid-rows--evenly">
-              <label>
-                <NumSelector control={control} name="hours" label={"時間(h)"} count={24} />
-                <p>時間(h)</p>
-              </label>
-              <label>
-                <NumSelector control={control} name="minutes" label={"分(m)"} count={60} />
-                <p>分(m)</p>
-              </label>
-            </div>
-            <div className="module-spacer--small" />
-            <PrimaryButton submit={true} onClick={() => {}} color="primary" disabled={false}>
-              学習内容を追加
-            </PrimaryButton>
-          </form>
-          <div className="module-spacer--small" />
-          <div className={`${classes.form}`}>
-            <LearningList
-              registration={registration}
-              editLearnedEle={editLearnedEle}
-              deleteLearnedEle={deleteLearnedEle}
-            />
-          </div>
+          <label>
+            <Switch checked={isChecked} onChange={handleModeChange} name="mode_change" />
+            <p>学習記録と一般の投稿を切り替えます</p>
+            <div className="module-spacer--very-small" />
+            <p>
+              ※学習記録は<span className="u-text--red">１日１回</span>の投稿制限があります
+            </p>
+          </label>
+          <div className="module-spacer--very-small" />
+          {isChecked && (
+            <>
+              <InputTime onChange={onRegisterDoneDate} doneDate={doneDate} />
+              <form className={classes.form} onSubmit={handleSubmit(onRegister)}>
+                {target && <p className={classes.target}>{`${target} を編集中`}</p>}
+                <div className="module-spacer--small" />
+                <PrimaryText
+                  control={control}
+                  errors={errors}
+                  errorMessage="学習内容は、５０文字以下で入力してください。"
+                  required={false}
+                  rules={{
+                    maxLength: 50,
+                  }}
+                  label="learningContent"
+                  name="learningContent"
+                  placeholder="学習内容"
+                  type="text"
+                />
+                <div className="module-spacer--small" />
+                <div className="p-grid-rows--evenly">
+                  <label>
+                    <NumSelector control={control} name="hours" label={"時間(h)"} count={24} />
+                    <p>時間(h)</p>
+                  </label>
+                  <label>
+                    <NumSelector control={control} name="minutes" label={"分(m)"} count={60} />
+                    <p>分(m)</p>
+                  </label>
+                </div>
+                <div className="module-spacer--small" />
+                <PrimaryButton submit={true} onClick={() => {}} color="primary" disabled={false}>
+                  学習内容を追加
+                </PrimaryButton>
+              </form>
+              <div className="module-spacer--small" />
+              <div className={`${classes.form}`}>
+                <LearningList
+                  registration={registration}
+                  editLearnedEle={editLearnedEle}
+                  deleteLearnedEle={deleteLearnedEle}
+                />
+              </div>
+            </>
+          )}
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
             <div className="module-spacer--medium" />
             <Divider />
-            <div className="module-spacer--small" />
-            <InputTime name="doneDate" control={control} />
             <div className="module-spacer--small" />
             <PrimaryText
               control={control}
@@ -284,7 +374,7 @@ const Reset: FC = () => {
                     <div
                       className={`p-media-thumb`}
                       onClick={() => {
-                        setIsOpen(true);
+                        setIsSlideOpen(true);
                         setClickedIndex(index);
                       }}>
                       <img src={ele.path} alt="投稿画像" />
@@ -306,7 +396,15 @@ const Reset: FC = () => {
           </Link>
           <div className="module-spacer--small" />
         </section>
-        <ImgModal initialSlide={clickedIndex} uploadedImg={uploadedImg} isOpen={isOpen} handleOpen={setIsOpen} />
+        <ImgModal
+          initialSlide={clickedIndex}
+          uploadedImg={uploadedImg}
+          isOpen={isSlideOpen}
+          handleOpen={setIsSlideOpen}
+        />
+        <PrimaryModal title={modalTitle} isOpen={isModalOpen} toggleOpen={toggleModalOpen}>
+          {modalContent}
+        </PrimaryModal>
       </div>
     </>
   );

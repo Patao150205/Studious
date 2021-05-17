@@ -17,7 +17,8 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { CommentArea } from ".";
 import { auth, db } from "../../../../firebase/firebaseConfig";
 import { UplodedImg } from "../../../../pages/edit";
-import { UserRecord } from "../../../features/usersSlice";
+import { useAppDispatch } from "../../../features/hooks";
+import { reflectHeart, UserRecord } from "../../../features/usersSlice";
 import { ImgModal } from "../molecules";
 
 const useStyles = makeStyles((theme: any) =>
@@ -100,6 +101,7 @@ type Props = {
 const PostCard: FC<Props> = ({ post, handleDelete }) => {
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenComments, setIsOpenComments] = useState(false);
@@ -121,6 +123,8 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
           .collection("userRecords")
           .doc(post.recordId)
           .set({ goodHeart: data }, { merge: true });
+        setIsGood(false);
+        dispatch(reflectHeart(data));
       } else {
         const username = auth.currentUser.displayName ?? "取得できませんでした";
         const userIcon = auth.currentUser.photoURL ?? "取得できませんでした";
@@ -131,6 +135,8 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
           .collection("userRecords")
           .doc(post.recordId)
           .set({ goodHeart: sendData }, { merge: true });
+        dispatch(reflectHeart(data));
+        setIsGood(true);
       }
     }
   };
@@ -179,7 +185,13 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
           }
         />
         <CardContent>
-          {post.learning_content.map((ele, index) => {
+          {post.doneDate && (
+            <>
+              <h1>{`学習日時: ${new Date(post.doneDate).toLocaleDateString()}`}</h1>
+              <div className="module-spacer--very-small" />
+            </>
+          )}
+          {post.learning_content?.map((ele, index) => {
             const minutes = ("00" + ele.minutes).slice(-2);
             return (
               <div className={classes.learningContents} key={index}>
@@ -217,8 +229,8 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
               <FontAwesomeIcon icon={["fas", "comments"]} />
             </Badge>
           </IconButton>
-          <IconButton className={`${classes.favoriteBtn} ${isGood && classes.good}`} onClick={toggleIsGood}>
-            <Badge max={999} badgeContent={post.goodHeart?.length} color="primary">
+          <IconButton disabled={true} className={`${classes.favoriteBtn} ${isGood && classes.good}`} onClick={() => {}}>
+            <Badge max={999} badgeContent={0} color="primary">
               <FontAwesomeIcon icon={["fas", "heart"]} />
             </Badge>
           </IconButton>

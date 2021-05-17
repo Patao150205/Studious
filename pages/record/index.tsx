@@ -32,6 +32,9 @@ function parseDataToDate(data: UserRecord) {
     data.created_at = data.created_at.toDate().toLocaleString();
     data.updated_at = data.updated_at.toDate().toLocaleString();
   }
+  if (data?.doneDate?.seconds) {
+    data.doneDate = data.doneDate.toDate().toLocaleString();
+  }
   if (data.othersComments?.comments) {
     data.othersComments.comments.map((comment) => {
       if (comment.created_at.seconds) {
@@ -55,7 +58,7 @@ const Record = () => {
   const [hasPrevPage, setHasPrevPage] = useState(true);
   const [hasNextPage, setHasNextPage] = useState(true);
 
-  const limitCount = 3;
+  const limitCount = 10;
   useEffect(() => {
     const unsubscribes: any = [];
     if (user) {
@@ -84,9 +87,11 @@ const Record = () => {
           .orderBy("created_at", "desc")
           .limit(1)
           .onSnapshot((snapshot) => {
-            const data: any = snapshot.docs[0].data();
-            parseDataToDate(data);
-            setFirstRecord(data);
+            if (snapshot.docs[0]) {
+              const data: any = snapshot.docs[0].data();
+              parseDataToDate(data);
+              setFirstRecord(data);
+            }
           })
       );
       //最後のレコード
@@ -98,9 +103,11 @@ const Record = () => {
           .orderBy("created_at", "desc")
           .limitToLast(1)
           .onSnapshot((snapshot) => {
-            const data: any = snapshot.docs[0].data();
-            parseDataToDate(data);
-            setLastRecord(data);
+            if (snapshot.docs[0]) {
+              const data: any = snapshot.docs[0].data();
+              parseDataToDate(data);
+              setLastRecord(data);
+            }
           })
       );
     }
@@ -125,11 +132,9 @@ const Record = () => {
 
     if (firstRecord && selector) {
       if (selector.length > 0) {
-        console.log(selector);
         setHasPrevPage(true);
         selector.forEach((item) => {
           if (item.recordId === firstRecord.recordId) {
-            console.log(item.recordId);
             setHasPrevPage(false);
           }
         });
@@ -138,12 +143,12 @@ const Record = () => {
     }
   }, [firstRecord, lastRecord, selector]);
 
-  console.log(firstRecord);
-  console.log(lastRecord);
-  console.log(currentFirstRecord);
-  console.log(currentLastRecord);
-  console.log(hasNextPage);
-  console.log(hasPrevPage);
+  // console.log(firstRecord);
+  // console.log(lastRecord);
+  // console.log(currentFirstRecord);
+  // console.log(currentLastRecord);
+  // console.log(hasNextPage);
+  // console.log(hasPrevPage);
 
   const handleNext = () => {
     db.collection("users")

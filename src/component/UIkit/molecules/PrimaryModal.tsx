@@ -11,12 +11,7 @@ type Props = {
 const PrimaryModal = ({ title, children, isOpen, toggleOpen }: Props) => {
   const transition = () => forwardRef((props, ref) => <Zoom in={isOpen} ref={ref} />);
   return (
-    <Dialog
-      open={isOpen}
-      keepMounted
-      onClose={toggleOpen}
-      aria-labelledby="確認ダイアログ"
-      aria-describedby="確認ダイアログ">
+    <Dialog open={isOpen} keepMounted onClose={toggleOpen}>
       <DialogTitle id="alert-dialog-slide-title">{title}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-slide-description">{children}</DialogContentText>

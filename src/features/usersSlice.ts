@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { auth, db } from "../../firebase/firebaseConfig";
 import { UplodedImg } from "../../pages/edit";
 import { HandleDelete } from "../../pages/record";
-import { Comment, SendCommentsData } from "../component/UIkit/organisms/commentArea";
+import { SendCommentsData } from "../component/UIkit/organisms/commentArea";
 import { RootState } from "../store";
 
 //Thunk
@@ -36,6 +36,11 @@ export const updateMyRecord: any = createAsyncThunk("user/updateMyRecord", async
     await db.collection("users").doc(data.uid).collection("userRecords").doc(data.recordId).set(data, { merge: true });
   }
 });
+
+// export const uploadHasLearningRecordOnDate: any = createAsyncThunk("user/uploadHasLearningRecordOnDate", async (data, thunk) => {
+
+//   return data;
+// });
 
 export const deleteUserRecord: any = createAsyncThunk(
   "user/deleteUserRecord",
@@ -81,20 +86,22 @@ type UserInfo = {
   photoURL: string;
   postCount: number;
   sns_path: { twitter: string; GitHub: string };
+  statisticalData: { sumed_time: number; posts_count: number };
   target: string;
   uid: string;
   username: string;
 };
 export type UserRecord = {
   created_at: any;
-  doneDate: string;
+  doneDate?: any;
   goodHeart: [{ uid: string; username: string; userIcon: string }] | [];
   recordId: string;
-  learning_content: [{ learningContent: string; hours: number; minutes: number; convertedToMinutes: number }];
+  learning_content?: [{ learningContent: string; hours: number; minutes: number; convertedToMinutes: number }];
   ownComment: string;
   othersComments?: SendCommentsData;
   images: UplodedImg[];
   isNew: boolean;
+  isLearningRecord: boolean | null;
   sumedTime: number;
   updated_at: any;
   uid: string;
@@ -119,6 +126,7 @@ export const initialState: UserState = {
     postCount: 0,
     role: "User",
     sns_path: { twitter: "", GitHub: "" },
+    statisticalData: { sumed_time: 0, posts_count: 0 },
     target: "",
     uid: "",
     username: "",
@@ -127,13 +135,14 @@ export const initialState: UserState = {
     {
       recordId: "",
       created_at: null,
-      doneDate: "",
+      doneDate: null,
       goodHeart: [],
       learning_content: [{ learningContent: "", hours: 0, minutes: 0, convertedToMinutes: 0 }],
       ownComment: "",
       othersComments: { comments: [], recordAuthorUid: "", recordId: "" },
       images: [],
       isNew: true,
+      isLearningRecord: null,
       sumedTime: 0,
       updated_at: null,
       uid: "",
@@ -149,6 +158,13 @@ const usersSlice = createSlice({
   reducers: {
     reflectRecordData: (state, action) => {
       state.myRecords = action.payload;
+    },
+    reflectHeart: (state, action) => {
+      state.myRecords.map((post) => {
+        if (post.recordId === action.payload.recordId) {
+          post.goodHeart = action.payload;
+        }
+      });
     },
   },
   extraReducers: {
@@ -198,6 +214,6 @@ export const userMyInfoSelector = (state: RootState) => state.users.myInfo;
 export const userRecordSelector = (state: RootState) => state.users.myRecords;
 export const userIsSinginSelector = (state: RootState) => state.users.myInfo.isSignin;
 
-export const { reflectRecordData } = usersSlice.actions;
+export const { reflectRecordData, reflectHeart } = usersSlice.actions;
 
 export default usersSlice.reducer;

@@ -134,9 +134,9 @@ export default function Home() {
                 <>
                   <p>初回ログイン日: {selector.created_at}</p>
                   <br />
-                  {/* <p>投稿日数 : {status.totalPostDay} (日)</p>
+                  <p>投稿日数 : {status} (日)</p>
                   <br />
-                  <p>総学習時間 : {status.totalTime} (時間)</p>
+                  {/* <p>総学習時間 : {status.totalTime} (時間)</p>
                   <br />
                   <p>平均学習時間 : {status.averageTimePerWeek} (時間/週間)</p>
                   <br />

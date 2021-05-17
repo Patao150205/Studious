@@ -50,6 +50,10 @@ body {
   font-family: cursive, sans-serif;
 }
 
+.u-text--red {
+  color: red;
+}
+
 .u-text-sub-headline {
   font-size: 1.4rem;
 }

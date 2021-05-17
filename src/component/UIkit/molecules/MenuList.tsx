@@ -71,15 +71,23 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
     },
     {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "edit"]} />,
-      primary: "学習の記録の作成",
-      secondary: "Create learning record",
+      primary: "学習記録・投稿の作成",
+      secondary: "Create learning record and post",
       onClick: useCallback(() => {
         router.push("/record/edit");
       }, [router]),
     },
     {
+      icon: <FontAwesomeIcon size="lg" icon={["fas", "edit"]} />,
+      primary: "自分の投稿を見る",
+      secondary: "Create learning record",
+      onClick: useCallback(() => {
+        router.push("/record");
+      }, [router]),
+    },
+    {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "users"]} />,
-      primary: "他の人の学習記録を見る",
+      primary: "他の人の投稿を見る＜実装予定＞",
       secondary: "Other people's learning records",
       onClick: useCallback(() => {
         router.push("/record/interaction");
