@@ -5,7 +5,7 @@ import React from "react";
 
 type Props = {
   disabled: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   children: string;
   bgColor: string;
   fColor: string;
@@ -29,9 +29,11 @@ const SecondButton = ({ disabled, onClick, children, bgColor, fColor, startIcon 
   const classes = useStyles();
 
   return (
-    <Button disabled={disabled} className={classes.root} onClick={onClick} startIcon={startIcon} variant="contained">
-      {children}
-    </Button>
+    <label htmlFor="uploadFileButton">
+      <Button disabled={disabled} className={classes.root} onClick={onClick} startIcon={startIcon} variant="contained">
+        {children}
+      </Button>
+    </label>
   );
 };
 

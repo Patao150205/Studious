@@ -23,9 +23,7 @@ const useStyles = makeStyles(() =>
 const StudiousLogoParallel: FC = () => {
   const router = useRouter();
   const classes = useStyles();
-  // const isSignin = useSelector((state: RootState) => state);
   const isSignin = useSelector(userIsSinginSelector);
-  console.log(isSignin);
   return (
     <div className={`${classes.root} ${isSignin && classes.enable}`}>
       <img

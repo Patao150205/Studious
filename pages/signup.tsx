@@ -12,11 +12,11 @@ import { useRouter } from "next/router";
 const useStyles = makeStyles(
   createStyles({
     root: {
-      position: "relative",
-      backgroundImage: "url(img/books-1456513080510-7bf3a84b82f8.jpeg)",
+      backgroundImage: "url(/img/books-1456513080510-7bf3a84b82f8.jpeg)",
       backgroundPosition: "center",
-      backgroundRepeat: "repeat",
-      height: "110vh",
+      minHeight: "100vh",
+      padding: "50px 0",
+      height: "auto",
     },
     card: {
       boxShadow: "0px 5px 5px 1px rgba(0, 0, 0, .2)",

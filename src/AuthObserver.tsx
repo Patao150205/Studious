@@ -1,15 +1,16 @@
 import { useRouter } from "next/router";
 import React, { FC, useEffect, useState } from "react";
-import { auth } from "../firebase/firebaseConfig";
+import { auth, db } from "../firebase/firebaseConfig";
 import { useAppDispatch } from "./features/hooks";
-import { fetchMyUserInfo } from "./features/usersSlice";
+import { fetchMyUserInfo, reflectRecordData, UserRecord } from "./features/usersSlice";
 import firebase from "firebase/app";
+import { Comment } from "./component/UIkit/organisms/commentArea";
 
 const AuthObserver: FC = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const notNeedAuthenticated = ["/signin", "/signup", "/reset"];
-  const user = useState<firebase.User | null>(null);
+  const [user, setUser] = useState<firebase.User | null>(null);
   const url = router.pathname;
 
   useEffect(() => {
@@ -17,14 +18,16 @@ const AuthObserver: FC = ({ children }) => {
       return;
     }
     auth.onAuthStateChanged((user) => {
-      if (user) {
-        dispatch(fetchMyUserInfo(user.uid));
-      } else {
+      if (!user) {
         router.push("/signin");
+      } else {
+        setUser(user);
+        dispatch(fetchMyUserInfo(user.uid));
       }
     });
   }, [url]);
-  return !user ? <></> : <>{children}</>;
+
+  return notNeedAuthenticated.includes(url) || user ? <>{children}</> : <></>;
 };
 
 export default AuthObserver;

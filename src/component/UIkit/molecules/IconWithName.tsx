@@ -44,7 +44,6 @@ const IconWithName: FC<Props> = ({ name, src, alt, onClick }) => {
         return classes.profileName__small;
     }
   };
-
   return (
     <div className={classes.root}>
       <Avatar src={src} alt={alt} className={`${classes.titleLogo}`} onClick={onClick} />

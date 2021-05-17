@@ -3,6 +3,7 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
 import "firebase/analytics";
+import "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBhUr2QPiHdVAHtmGc9qXiJ39b_RksH8LA",
@@ -24,8 +25,9 @@ export const TwitterProvider = new firebase.auth.TwitterAuthProvider();
 export const GitHubProvider = new firebase.auth.GithubAuthProvider();
 
 export const db = firebase.firestore();
-
 export const storage = firebase.storage();
+
+// export const adminAuth = admin.auth();
 
 export const FirebaseTimestamp = firebase.firestore.Timestamp;
 

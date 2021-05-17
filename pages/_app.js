@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/reset.css";
 import "../styles/styles.css";
+import "../styles/swiper.css";
 import "../src/fontawesome";
 import PropTypes from "prop-types";
 import Head from "next/head";
@@ -11,6 +12,7 @@ import { store } from "../src/store";
 import AuthObserver from "../src/AuthObserver";
 import { Header, Sidebar } from "../src/templates/index";
 import { useRouter } from "next/router";
+import { auth } from "../firebase/firebaseConfig";
 
 const useStyles = makeStyles((theme) => ({
   spaces: {

@@ -20,6 +20,9 @@
     "@material-ui/styles": "^4.11.4",
     "@reduxjs/toolkit": "^1.5.1",
     "@types/react-redux": "^7.1.16",
+    "blueimp-load-image": "^5.14.0",
+    "child_process": "^1.0.2",
+    "firebase-admin": "^9.8.0",
     "html-react-parser": "^1.2.6",
     "install": "^0.13.0",
     "next": "10.1.3",
@@ -28,11 +31,13 @@
     "react-dom": "17.0.2",
     "react-google-charts": "^3.0.15",
     "react-hook-form": "^7.3.6",
-    "react-redux": "^7.2.4"
+    "react-redux": "^7.2.4",
+    "swiper": "^6.5.8"
   },
   "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
   "main": "index.js",
   "devDependencies": {
+    "@types/blueimp-load-image": "^5.14.0",
     "@types/node": "^15.0.0",
     "@types/react": "^17.0.4",
     "eslint-config-prettier": "^8.3.0",
