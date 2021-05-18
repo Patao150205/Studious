@@ -1,8 +1,13 @@
 import Head from "next/head";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAppDispatch } from "../../src/features/hooks";
-import { useSelector } from "react-redux";
-import { deleteUserRecord, reflectRecordData, UserRecord, userRecordSelector } from "../../src/features/usersSlice";
+import { useAppDispatch, useAppSelector } from "../../src/features/hooks";
+import {
+  deleteUserRecord,
+  reflectRecordData,
+  UserRecord,
+  userRecordSelector,
+  userStatisticalDataSelector,
+} from "../../src/features/usersSlice";
 import { PostCard } from "../../src/component/UIkit/organisms/index";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import { IconButton, Theme } from "@material-ui/core";
@@ -14,6 +19,8 @@ export type HandleDelete = {
   uid: string;
   recordId: string;
   newPosts: UserRecord[];
+  total_time: number;
+  posts_count: number;
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -23,6 +30,11 @@ const useStyles = makeStyles((theme: Theme) =>
       transform: "translate(-50%, -50%)",
       top: "50%",
       left: "50%",
+    },
+    togglePageBtn: {
+      fontSize: 30,
+      display: "flex",
+      justifyContent: "center",
     },
   })
 );
@@ -47,8 +59,10 @@ function parseDataToDate(data: UserRecord) {
 const Record = () => {
   const user = auth.currentUser;
   const dispatch = useAppDispatch();
-  const selector = useSelector(userRecordSelector);
+  const selector = useAppSelector(userRecordSelector);
   const classes = useStyles();
+  const statisticalData = useAppSelector(userStatisticalDataSelector);
+
   //前後のレコードを保持
   const [currentFirstRecord, setCurrentFirstRecord] = useState<any>(null);
   const [currentLastRecord, setCurrentLastRecord] = useState<any>(null);
@@ -129,7 +143,6 @@ const Record = () => {
         setCurrentLastRecord(selector.slice(-1)[0]);
       }
     }
-
     if (firstRecord && selector) {
       if (selector.length > 0) {
         setHasPrevPage(true);
@@ -191,16 +204,22 @@ const Record = () => {
     (uid: string, recordId: string) => {
       const isPost = confirm("本当に投稿を削除してよろしいでしょうか？");
       if (isPost) {
+        const targetRecord = selector.find((ele) => ele.recordId === recordId);
+        let { total_time, posts_count } = statisticalData;
+        total_time = statisticalData.total_time - (targetRecord?.sumedTime ?? 0);
+        posts_count -= 1;
         const newPosts = selector.filter((ele: UserRecord) => ele.recordId !== recordId);
         const query = {
           uid,
           recordId,
           newPosts,
+          total_time,
+          posts_count,
         };
         dispatch(deleteUserRecord(query));
       }
     },
-    [selector]
+    [selector, statisticalData]
   );
 
   return (
@@ -208,20 +227,21 @@ const Record = () => {
       <Head>
         <title>STUDIOUS 学習記録</title>
       </Head>
-      {selector?.length !== 0 ? (
-        <>
-          <section className={`c-section-wrapping--main`}>
-            {selector?.map((post) => (
-              <PostCard handleDelete={handleDelete} key={post.recordId} post={post} />
-            ))}
+      {selector?.length !== 0 || firstRecord || lastRecord ? (
+        <section className={`c-section-wrapping--main`}>
+          {selector?.map((post) => (
+            <PostCard handleDelete={handleDelete} key={post.recordId} post={post} />
+          ))}
+          <div className={classes.togglePageBtn}>
             <IconButton disabled={!hasPrevPage} onClick={handlePrev}>
               <FontAwesomeIcon icon={["fas", "chevron-left"]} />
             </IconButton>
             <IconButton disabled={!hasNextPage} onClick={handleNext}>
               <FontAwesomeIcon icon={["fas", "chevron-right"]} />
             </IconButton>
-          </section>
-        </>
+          </div>
+          <div className="module-spacer--very-small" />
+        </section>
       ) : (
         <div className={`${classes.noPostRoot} c-section-container`}>
           <h1>投稿がありません。作成してみよう！</h1>

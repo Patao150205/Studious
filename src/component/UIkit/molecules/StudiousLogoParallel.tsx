@@ -1,7 +1,7 @@
 import { createStyles, makeStyles } from "@material-ui/core";
 import { useRouter } from "next/router";
 import React, { FC } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../../../features/hooks";
 import { userIsSinginSelector } from "../../../features/usersSlice";
 
 const useStyles = makeStyles(() =>
@@ -23,7 +23,7 @@ const useStyles = makeStyles(() =>
 const StudiousLogoParallel: FC = () => {
   const router = useRouter();
   const classes = useStyles();
-  const isSignin = useSelector(userIsSinginSelector);
+  const isSignin = useAppSelector(userIsSinginSelector);
   return (
     <div className={`${classes.root} ${isSignin && classes.enable}`}>
       <img

@@ -22,7 +22,7 @@ export const fetchMyUserInfo: any = createAsyncThunk("user/fetchMyUserInfo", asy
   uid && (await db.collection("users").doc(uid).set({ isSignin: true }, { merge: true }));
   const res = await db.collection("users").doc(uid).get();
   const data: any = res.data();
-  data.created_at = data.created_at.toDate().toLocaleDateString();
+  data.created_at = data.created_at?.toDate().toLocaleDateString();
   return data;
 });
 
@@ -37,15 +37,11 @@ export const updateMyRecord: any = createAsyncThunk("user/updateMyRecord", async
   }
 });
 
-// export const uploadHasLearningRecordOnDate: any = createAsyncThunk("user/uploadHasLearningRecordOnDate", async (data, thunk) => {
-
-//   return data;
-// });
-
 export const deleteUserRecord: any = createAsyncThunk(
   "user/deleteUserRecord",
-  async ({ uid, recordId, newPosts }: HandleDelete, thunk) => {
+  async ({ uid, recordId, newPosts, total_time, posts_count }: HandleDelete, thunk) => {
     await db.collection("users").doc(uid).collection("userRecords").doc(recordId).delete();
+    await db.collection("users").doc(uid).set({ statisticalData: { total_time, posts_count } }, { merge: true });
     return newPosts;
   }
 );
@@ -84,9 +80,8 @@ type UserInfo = {
   isSignin: boolean;
   role: "User" | "Admin";
   photoURL: string;
-  postCount: number;
   sns_path: { twitter: string; GitHub: string };
-  statisticalData: { sumed_time: number; posts_count: number };
+  statisticalData: { total_time: number; posts_count: number };
   target: string;
   uid: string;
   username: string;
@@ -101,7 +96,7 @@ export type UserRecord = {
   othersComments?: SendCommentsData;
   images: UplodedImg[];
   isNew: boolean;
-  isLearningRecord: boolean | null;
+  isLearningRecord: boolean;
   sumedTime: number;
   updated_at: any;
   uid: string;
@@ -123,10 +118,9 @@ export const initialState: UserState = {
     photoURL: "",
     introduce_myself: "",
     isSignin: false,
-    postCount: 0,
     role: "User",
     sns_path: { twitter: "", GitHub: "" },
-    statisticalData: { sumed_time: 0, posts_count: 0 },
+    statisticalData: { total_time: 0, posts_count: 0 },
     target: "",
     uid: "",
     username: "",
@@ -142,7 +136,7 @@ export const initialState: UserState = {
       othersComments: { comments: [], recordAuthorUid: "", recordId: "" },
       images: [],
       isNew: true,
-      isLearningRecord: null,
+      isLearningRecord: false,
       sumedTime: 0,
       updated_at: null,
       uid: "",
@@ -213,6 +207,7 @@ export const userSelector = (state: RootState) => state.users;
 export const userMyInfoSelector = (state: RootState) => state.users.myInfo;
 export const userRecordSelector = (state: RootState) => state.users.myRecords;
 export const userIsSinginSelector = (state: RootState) => state.users.myInfo.isSignin;
+export const userStatisticalDataSelector = (state: RootState) => state.users.myInfo.statisticalData;
 
 export const { reflectRecordData, reflectHeart } = usersSlice.actions;
 

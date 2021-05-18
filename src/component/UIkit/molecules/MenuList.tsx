@@ -79,7 +79,7 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
     },
     {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "edit"]} />,
-      primary: "自分の投稿を見る",
+      primary: "自分の全投稿",
       secondary: "Create learning record",
       onClick: useCallback(() => {
         router.push("/record");
@@ -87,7 +87,7 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
     },
     {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "users"]} />,
-      primary: "他の人の投稿を見る＜実装予定＞",
+      primary: "他の人の投稿＜実装予定＞",
       secondary: "Other people's learning records",
       onClick: useCallback(() => {
         router.push("/record/interaction");

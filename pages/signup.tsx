@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
 import { PrimaryModal, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
 import { signUpWithEmailPassword } from "../src/Auth";
-import { useAppDispatch, useAppSelector } from "../src/features/hooks";
+import { useAppDispatch } from "../src/features/hooks";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles(

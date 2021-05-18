@@ -6,9 +6,8 @@ import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
 import { EditProfileImg, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
 import { Theme } from "@material-ui/core";
-import { useAppDispatch } from "../src/features/hooks";
+import { useAppDispatch, useAppSelector } from "../src/features/hooks";
 import { PartialUserInfo, updateMyInfo, userMyInfoSelector } from "../src/features/usersSlice";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -49,7 +48,7 @@ export type UplodedImg = {
 
 const Reset: FC = () => {
   const classes = useStyles();
-  const selector = useSelector(userMyInfoSelector);
+  const selector = useAppSelector(userMyInfoSelector);
   const {
     formState: { errors },
     control,

@@ -105,7 +105,7 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenComments, setIsOpenComments] = useState(false);
-  const [uploadedImg] = useState<UplodedImg[] | null>(post.images);
+  const [uploadedImg, setUploadImg] = useState<UplodedImg[] | null>(null);
   const [clickedIndex, setClickIndex] = useState(0);
   const [isGood, setIsGood] = useState(false);
 
@@ -145,7 +145,8 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
     const uid = auth.currentUser?.uid;
     const isFound = post.goodHeart?.some((ele) => ele.uid === uid);
     setIsGood(isFound);
-  }, [post.goodHeart]);
+    setUploadImg(post.images);
+  }, [post.goodHeart, post.images]);
 
   return (
     <div>

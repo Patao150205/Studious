@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: any) =>
 );
 
 type Props = {
-  registration: Registration;
+  registration: Registration[];
   editLearnedEle: (learningContent: string) => void;
   deleteLearnedEle: (learningContent: string) => void;
 };

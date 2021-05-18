@@ -14,9 +14,11 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconWithName } from "../src/component/UIkit/molecules";
-import { useSelector } from "react-redux";
-import { userMyInfoSelector } from "../src/features/usersSlice";
+import { userMyInfoSelector, UserRecord } from "../src/features/usersSlice";
 import HTMLReactParser from "html-react-parser";
+import { useAppSelector } from "../src/features/hooks";
+import { useEffect, useState } from "react";
+import { auth, db, FirebaseTimestamp } from "../firebase/firebaseConfig";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,10 +76,45 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Home() {
   const router = useRouter();
   const classes = useStyles();
-  const selector = useSelector(userMyInfoSelector);
+  const selector = useAppSelector(userMyInfoSelector);
+
+  const [recordsForWeek, setRecordsForWeek] = useState<UserRecord[]>([]);
+  console.log(recordsForWeek, "これ");
   const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
   const target = HTMLReactParser(selector.target.replace(/\n/g, "<br />"));
-  // const status = selector.statisticalData;
+  const status = selector.statisticalData;
+  const uid = auth.currentUser?.uid;
+
+  useEffect(() => {
+    const TimeNow = new Date(FirebaseTimestamp.now().toDate());
+    const dateNow = TimeNow.setHours(0, 0, 0, 0);
+    const y = TimeNow.getFullYear();
+    const m = TimeNow.getMonth();
+    const d = TimeNow.getDate() - 7;
+    const lastWeekDate = FirebaseTimestamp.fromDate(new Date(y, m, d));
+    const convertedNowDate = FirebaseTimestamp.fromMillis(dateNow);
+
+    //一週間前から今日までの学習記録を取得する。
+    db.collection("users")
+      .doc(uid)
+      .collection("userRecords")
+      .orderBy("doneDate", "desc")
+      .where("doneDate", "<=", convertedNowDate)
+      .where("doneDate", ">=", lastWeekDate)
+      .get()
+      .then((snapshot) => {
+        const gettedRecords: UserRecord[] = [];
+        snapshot.forEach((ele) => {
+          const record = ele.data() as UserRecord;
+          gettedRecords.push(record);
+        });
+        setRecordsForWeek(gettedRecords);
+      });
+  }, [uid]);
+
+  const totalTimeForWeek = recordsForWeek.reduce((totalTime, recordTime) => {
+    return totalTime + recordTime.sumedTime;
+  }, 0);
 
   return (
     <>
@@ -134,14 +171,14 @@ export default function Home() {
                 <>
                   <p>初回ログイン日: {selector.created_at}</p>
                   <br />
-                  <p>投稿日数 : {status} (日)</p>
+                  <p>学習記録投稿日数 : {status.posts_count} 日</p>
                   <br />
-                  {/* <p>総学習時間 : {status.totalTime} (時間)</p>
+                  <p>総学習時間 : {(status.total_time / 60).toFixed(1)} 時間</p>
                   <br />
-                  <p>平均学習時間 : {status.averageTimePerWeek} (時間/週間)</p>
+                  <p>一周間の学習時間: {(totalTimeForWeek / 60).toFixed(1)} 時間</p>
                   <br />
-                  <p>平均学習時間 : {status.averageTimePerDay} (時間/日)</p>
-                  <br /> */}
+                  <p>平均学習時間 : {(totalTimeForWeek / 60 / 7).toFixed(1)} 時間 (日/週間)</p>
+                  <br />
                 </>
               </PrimaryCard>
             </div>

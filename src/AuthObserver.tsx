@@ -1,10 +1,9 @@
 import { useRouter } from "next/router";
 import React, { FC, useEffect, useState } from "react";
-import { auth, db } from "../firebase/firebaseConfig";
+import { auth } from "../firebase/firebaseConfig";
 import { useAppDispatch } from "./features/hooks";
-import { fetchMyUserInfo, reflectRecordData, UserRecord } from "./features/usersSlice";
+import { fetchMyUserInfo } from "./features/usersSlice";
 import firebase from "firebase/app";
-import { Comment } from "./component/UIkit/organisms/commentArea";
 
 const AuthObserver: FC = ({ children }) => {
   const router = useRouter();

@@ -12,15 +12,16 @@ import {
   StudiousLogoVertical,
 } from "../../../src/component/UIkit/molecules";
 import { NumSelector, PrimaryButton } from "../../../src/component/UIkit/atoms";
-import { useAppDispatch } from "../../../src/features/hooks";
-import { updateMyRecord } from "../../../src/features/usersSlice";
-import { Divider, Switch } from "@material-ui/core";
-import { auth, db, FirebaseTimestamp } from "../../../firebase/firebaseConfig";
+import { useAppDispatch, useAppSelector } from "../../../src/features/hooks";
+import { updateMyRecord, userStatisticalDataSelector } from "../../../src/features/usersSlice";
+import { Divider, Switch, Theme } from "@material-ui/core";
+import { auth, db, FirebaseTimestamp, storage } from "../../../firebase/firebaseConfig";
 import { UplodedImg } from "../../edit";
 import UploadPictureButton from "../../../src/component/UIkit/atoms/UploadPictureButton";
 import { LearningList } from "../../../src/component/UIkit/organisms";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const useStyles = makeStyles((theme: any) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundImage: "url(/img/books-1456513080510-7bf3a84b82f8.jpeg)",
@@ -48,6 +49,18 @@ const useStyles = makeStyles((theme: any) =>
         gridTemplateColumns: "repeat(auto-fit, minmax(calc(33% - 10px), 1fr))",
       },
     },
+    imgDelete: {
+      padding: 5,
+      borderRadius: 8,
+      background: "#ccc",
+      fontSize: 25,
+      width: "50%",
+      margin: "0 auto",
+      "&:hover": {
+        opacity: "0.8",
+        cursor: "pointer",
+      },
+    },
     link: {
       color: "#444",
       textDecoration: "none",
@@ -55,14 +68,12 @@ const useStyles = makeStyles((theme: any) =>
   })
 );
 
-export type Registration =
-  | {
-      learningContent: string;
-      hours: number;
-      minutes: number;
-      convertedToMinutes: number;
-    }[]
-  | [];
+export type Registration = {
+  learningContent: string;
+  hours: number;
+  minutes: number;
+  convertedToMinutes: number;
+};
 
 export type FormContents = {
   ownComment?: string;
@@ -77,26 +88,6 @@ export type FormContents = {
 const timeNow = FirebaseTimestamp.now().toDate().toLocaleDateString();
 const Reset: FC = () => {
   const classes = useStyles();
-
-  //編集の対象
-  const [target, setTarget] = useState<string | null>(null);
-  //学習記録の登録
-  const [registration, setRegistration] = useState<Registration>([]);
-  const [sumedTime, setSumedTime] = useState<number>(0);
-  const [uploadedImg, setUploadedImg] = useState<UplodedImg[] | null>([]);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [clickedIndex, setClickedIndex] = useState<number>(0);
-  const [doneDate, setDoneDate] = useState<string>(timeNow);
-
-  //画像のスライドショー
-  const [isSlideOpen, setIsSlideOpen] = useState(false);
-  //確認のモーダル
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalContent, setModalContent] = useState("");
-  const toggleModalOpen = useCallback(() => {
-    setIsModalOpen(!isModalOpen);
-  }, [isModalOpen]);
 
   const {
     control,
@@ -115,6 +106,29 @@ const Reset: FC = () => {
   });
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const statisticalData = useAppSelector(userStatisticalDataSelector);
+
+  //編集の対象
+  const [target, setTarget] = useState<string | null>(null);
+  //学習記録の登録
+  const [registration, setRegistration] = useState<Registration[] | []>([]);
+  const [sumedTime, setSumedTime] = useState<number>(0);
+  const [uploadedImg, setUploadedImg] = useState<UplodedImg[] | null>([]);
+  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [clickedIndex, setClickedIndex] = useState<number>(0);
+  const [doneDate, setDoneDate] = useState<string>(timeNow);
+
+  //画像のスライドショー
+  const [isSlideOpen, setIsSlideOpen] = useState(false);
+  //確認のモーダル
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const toggleModalOpen = useCallback(() => {
+    setIsModalOpen(!isModalOpen);
+  }, [isModalOpen]);
+  //ボタン連打対策
+  const [isSubmited, setIsSubmited] = useState(false);
 
   const handleModeChange = useCallback(() => {
     setIsChecked(!isChecked);
@@ -127,13 +141,20 @@ const Reset: FC = () => {
   const onRegister = useCallback(
     (formContent: FormContents) => {
       if (!formContent.learningContent) {
-        alert("学習内容を入力してください。");
-        return;
-      } else if (!(formContent.hours || formContent.minutes)) {
-        //hoursとminutesがともに0であった場合にエラー
-        alert("時間が０分なので、追加することができません。");
+        setModalTitle("学習記録の登録エラー");
+        setModalContent("学習内容を入力してください。");
+        toggleModalOpen();
         return;
       }
+
+      if (!(formContent.hours || formContent.minutes)) {
+        //hoursとminutesがともに0であった場合にエラー
+        setModalTitle("学習記録の登録エラー");
+        setModalContent("時間が０分なので、追加することができません。");
+        toggleModalOpen();
+        return;
+      }
+
       //編集の対象が存在し、かつ学習内容一覧がnullでない場合
       if (target && registration) {
         const convertedToMinutes = formContent.hours * 60 + formContent.minutes;
@@ -173,6 +194,7 @@ const Reset: FC = () => {
 
   const onSubmit = useCallback(
     async (data: FormContents) => {
+      setIsSubmited(true);
       const convertedDoneDate = new Date(doneDate).setHours(0, 0, 0, 0);
       if (isChecked) {
         //投稿できる日付の範囲を絞る
@@ -184,6 +206,17 @@ const Reset: FC = () => {
           setModalTitle("学習記録の登録エラー");
           setModalContent("学習記録に登録できるのは、2020/1/1から、今日までの日付のみです。");
           toggleModalOpen();
+          setIsSubmited(false);
+          return;
+        }
+
+        const taskNameArr = registration.map((ele: Registration) => ele.learningContent);
+        const s = new Set(taskNameArr);
+        if (s.size !== taskNameArr.length) {
+          setModalTitle("学習記録の登録エラー");
+          setModalContent("学習内容が重複しています。重複しないように登録してください。");
+          toggleModalOpen();
+          setIsSubmited(false);
           return;
         }
 
@@ -191,6 +224,7 @@ const Reset: FC = () => {
           setModalTitle("学習記録の登録エラー");
           setModalContent("一日２４時間以上勉強しています！正しい時間を入力してください。");
           toggleModalOpen();
+          setIsSubmited(false);
           return;
         }
         const uid = auth.currentUser?.uid;
@@ -211,8 +245,10 @@ const Reset: FC = () => {
             ).toLocaleDateString()}の投稿は存在しています！`
           );
           toggleModalOpen();
+          setIsSubmited(false);
           return;
         }
+
         const sendData = {
           created_at: FirebaseTimestamp.now(),
           ownComment: data.ownComment,
@@ -228,6 +264,11 @@ const Reset: FC = () => {
           userIcon: auth.currentUser?.photoURL,
         };
         dispatch(updateMyRecord(sendData)).then(() => {
+          //ユーザの統計を更新する
+          let { total_time, posts_count } = statisticalData;
+          total_time += sumedTime;
+          posts_count += 1;
+          db.collection("users").doc(uid).set({ statisticalData: { total_time, posts_count } }, { merge: true });
           router.push("/record");
         });
       } else {
@@ -275,14 +316,24 @@ const Reset: FC = () => {
       }
       const newList = registration.filter((ele) => {
         if (ele.learningContent === learningContent) {
-          setSumedTime((prev) => prev - ele.convertedToMinutes);
+          setSumedTime((prev) => {
+            return prev - ele.convertedToMinutes;
+          });
         }
         return ele.learningContent !== learningContent;
       });
       setRegistration(newList);
     },
-    [registration, target]
+    [registration, target, setSumedTime]
   );
+
+  const deleteImg = (id: string) => {
+    if (uploadedImg) {
+      storage.ref("postImg").child(id).delete();
+      const newArr = uploadedImg.filter((ele: UplodedImg) => ele.id !== id);
+      setUploadedImg(newArr);
+    }
+  };
 
   return (
     <>
@@ -297,7 +348,7 @@ const Reset: FC = () => {
           <h2 className="u-text-sub-headline">{isChecked ? "学習記録の作成" : "投稿の作成"}</h2>
           <div className="module-spacer--medium" />
           <label>
-            <Switch checked={isChecked} onChange={handleModeChange} name="mode_change" />
+            <Switch checked={isChecked} value={isChecked} onChange={handleModeChange} name="mode_change" />
             <p>学習記録と一般の投稿を切り替えます</p>
             <div className="module-spacer--very-small" />
             <p>
@@ -380,12 +431,16 @@ const Reset: FC = () => {
                       <img src={ele.path} alt="投稿画像" />
                     </div>
                     <div className="module-spacer--very-small" />
+                    <div className={classes.imgDelete} onClick={() => deleteImg(ele.id)}>
+                      <FontAwesomeIcon icon={["fas", "trash"]} />
+                    </div>
+                    <div className="module-spacer--very-small" />
                   </div>
                 ))}
             </div>
             <div className="module-spacer--small" />
             <div className="p-grid-columns">
-              <PrimaryButton submit={true} color="primary" disabled={false}>
+              <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
                 学習記録を作成する
               </PrimaryButton>
             </div>
