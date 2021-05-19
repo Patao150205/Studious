@@ -22,7 +22,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const ColumnChart: FC = () => {
+type Props = {
+  width?: number;
+  height?: number;
+  data: any[];
+  title: string;
+  isStacked?: boolean;
+};
+
+const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }) => {
   const classes = useStyles();
   return (
     <>
@@ -31,29 +39,28 @@ const ColumnChart: FC = () => {
         <Chart
           className={classes.chart}
           chartType="ColumnChart"
-          loader={<div>Loading Chart</div>}
-          data={[
-            ["City", "2010 Population", "2000 Population"],
-            ["New York City, NY", 8175000, 8008000],
-            ["Los Angeles, CA", 3792000, 3694000],
-            ["Chicago, IL", 2695000, 2896000],
-            ["Houston, TX", 2099000, 1953000],
-            ["Philadelphia, PA", 1526000, 1517000],
-          ]}
+          loader={<div>グラフを読込中です....しばらくお待ち下さい😊</div>}
+          width={width}
+          height={height}
+          data={data}
           options={{
-            title: "Population of Largest U.S. Cities",
-            chartArea: { width: "50%" },
-            isStacked: true,
-            hAxis: {
-              title: "Total Population",
-              minValue: 0,
+            title,
+            titleTextStyle: {
+              color: "#AC2EBF",
+              fontSize: 25,
+              bold: true,
             },
-            vAxis: {
-              title: "City",
+            chartArea: { width: "85%", left: "10%" },
+            isStacked,
+            bar: { groupWidth: "50%" },
+            legend: { position: "none" },
+            tooltip: { textStyle: { color: "#AC2EBF" }, showColorCode: false },
+            series: {
+              6: {
+                color: "red",
+              },
             },
           }}
-          // For tests
-          rootProps={{ "data-testid": "3" }}
         />
       </div>
     </>

@@ -80,7 +80,7 @@ const Record = () => {
       db.collection("users")
         .doc(user.uid)
         .collection("userRecords")
-        .orderBy("doneDate", "desc")
+        .orderBy("created_at", "desc")
         .limit(limitCount)
         .get()
         .then((snapshot) => {
@@ -98,7 +98,7 @@ const Record = () => {
           .collection("users")
           .doc(user.uid)
           .collection("userRecords")
-          .orderBy("doneDate", "desc")
+          .orderBy("created_at", "desc")
           .limit(1)
           .onSnapshot((snapshot) => {
             if (snapshot.docs[0]) {
@@ -114,7 +114,7 @@ const Record = () => {
           .collection("users")
           .doc(user.uid)
           .collection("userRecords")
-          .orderBy("doneDate", "desc")
+          .orderBy("created_at", "desc")
           .limitToLast(1)
           .onSnapshot((snapshot) => {
             if (snapshot.docs[0]) {
@@ -225,7 +225,7 @@ const Record = () => {
   return (
     <>
       <Head>
-        <title>STUDIOUS 学習記録</title>
+        <title>STUDIOS 全投稿</title>
       </Head>
       {selector?.length !== 0 || firstRecord || lastRecord ? (
         <section className={`c-section-wrapping--main`}>

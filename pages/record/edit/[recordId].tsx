@@ -306,7 +306,7 @@ const Reset: FC = () => {
           userIcon: auth.currentUser?.photoURL,
         };
         dispatch(updateMyRecord(sendData)).then(() => {
-          router.push("/record");
+          router.push("/record/allpost");
         });
       }
     },
