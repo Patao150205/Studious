@@ -5,6 +5,7 @@ import { initialState, fetchMyUserInfo, updateMyInfo, updateIsSignin } from "./f
 import React from "react";
 
 export const signUpWithEmailPassword = async (
+  username: string,
   email: string,
   dispatch: any,
   password: string,
@@ -15,8 +16,11 @@ export const signUpWithEmailPassword = async (
 ) => {
   auth
     .createUserWithEmailAndPassword(email, password)
-    .then((snapshot) => {
+    .then(async (snapshot) => {
       const user = snapshot.user;
+      await user?.updateProfile({
+        displayName: username,
+      });
       if (user === null) {
         throw new Error("ユーザ情報を取得できませんでした。");
       }
@@ -24,6 +28,7 @@ export const signUpWithEmailPassword = async (
       const data = {
         ...initialState.myInfo,
         uid: user.uid,
+        username: user.displayName,
         email: user.email ?? "",
         created_at: timestamp as any,
         isSignin: true,

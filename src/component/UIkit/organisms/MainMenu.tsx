@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { createStyles, makeStyles } from "@material-ui/core";
 import React, { FC } from "react";
 import { PrimaryCard } from "../atoms";
 import { MenuList } from "../molecules";

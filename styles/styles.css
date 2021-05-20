@@ -1,6 +1,6 @@
 body {
   color: #444 !important;
-  font-family: "メイリオ", sans-serif !important;
+  font-family: "メイリオ", sans-serif;
   overflow: scroll;
   min-height: 100vh;
   height: auto;
@@ -160,7 +160,7 @@ body {
 }
 
 /* PC */
-@media (min-width: 1280px) {
+/* @media (min-width: 1280px) {
   .c-section-wrapping {
   }
-}
+} */

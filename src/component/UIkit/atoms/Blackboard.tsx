@@ -31,11 +31,11 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       lineHeight: "1.8rem",
       fontSize: 14,
+      "& > p": {
+        fontFamily: "Hannotate SC, TsukuARdGothic-Regular , HanziPen SC, Wawati SC, ヒラギノ丸ゴ Pro, san-serif",
+      },
       [theme.breakpoints.up("sm")]: {
         fontSize: 16,
-      },
-      "& > p": {
-        fontFamily: "Hannotate SC, TsukuARdGothic-Regular,ヒラギノ丸ゴ Pro , HanziPen SC, Wawati SC, san-serif",
       },
     },
   })
@@ -48,7 +48,9 @@ const Blackboard: FC<Props> = ({ content }) => {
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        <div className={classes.content}>{content}</div>
+        <div className={classes.content}>
+          <p>{content}</p>
+        </div>
       </div>
     </div>
   );

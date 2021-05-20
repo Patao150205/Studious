@@ -284,13 +284,13 @@ export default function Home() {
                 <>
                   <p>初回ログイン日: {selector.created_at}</p>
                   <br />
-                  <p>学習記録投稿日数 : {status.posts_count} 日</p>
+                  <p>学習記録投稿日数 : {status?.posts_count}日</p>
                   <br />
-                  <p>総学習時間 : {(status.total_time / 60).toFixed(1)} 時間</p>
+                  <p>総学習時間 : {(status?.total_time / 60).toFixed(1)}時間</p>
                   <br />
-                  <p>一周間の学習時間: {(totalTimeForWeek / 60).toFixed(1)} 時間</p>
+                  <p>一周間の学習時間: {(totalTimeForWeek / 60).toFixed(1)}時間</p>
                   <br />
-                  <p>平均学習時間 : {(totalTimeForWeek / 60 / 7).toFixed(1)} 時間 (日/週間)</p>
+                  <p>一周間の平均学習時間 : {(totalTimeForWeek / 60 / 7).toFixed(1)}時間(日)</p>
                   <br />
                 </>
               </PrimaryCard>

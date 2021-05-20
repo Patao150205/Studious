@@ -20,7 +20,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const StudiousLogoParallel: FC = () => {
+const StudiousLogoHorizontal: FC = () => {
   const router = useRouter();
   const classes = useStyles();
   const isSignin = useAppSelector(userIsSinginSelector);
@@ -41,4 +41,4 @@ const StudiousLogoParallel: FC = () => {
   );
 };
 
-export default StudiousLogoParallel;
+export default StudiousLogoHorizontal;

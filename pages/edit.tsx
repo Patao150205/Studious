@@ -70,19 +70,22 @@ const Reset: FC = () => {
 
   const [uploadedImg, setUploadedImg] = useState<UplodedImg>({ id: "", path: null });
 
-  const onSubmit = useCallback((data: any) => {
-    const newData: PartialUserInfo = {
-      uid: selector.uid,
-      photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
-      introduce_myself: data.introduce ?? "",
-      sns_path: { twitter: data.TwitterURL ?? "", GitHub: data.GitHubURL ?? "" },
-      target: data.target ?? "",
-      username: data.username,
-    };
-    dispatch(updateMyInfo(newData)).then(() => {
-      router.push("/");
-    });
-  }, []);
+  const onSubmit = useCallback(
+    (data: any) => {
+      const newData: PartialUserInfo = {
+        uid: selector.uid,
+        photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
+        introduce_myself: data.introduce ?? "",
+        sns_path: { twitter: data.TwitterURL ?? "", GitHub: data.GitHubURL ?? "" },
+        target: data.target ?? "",
+        username: data.username,
+      };
+      dispatch(updateMyInfo(newData)).then(() => {
+        router.push("/");
+      });
+    },
+    [selector, uploadedImg]
+  );
 
   useEffect(() => {
     setValue("username", selector.username);

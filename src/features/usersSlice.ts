@@ -7,10 +7,8 @@ import { RootState } from "../store";
 
 //Thunk
 export const updateMyInfo: any = createAsyncThunk("user/updateMyInfo", async (data: PartialUserInfo, thunk) => {
+  console.log(data);
   const uid = data.uid;
-  auth.currentUser?.updateProfile({
-    displayName: data.username,
-  });
   await db.collection("users").doc(uid).set(data, { merge: true });
   //Redux用にキャストする
   data.created_at && (data.created_at = data.created_at.toDate().toLocaleDateString());

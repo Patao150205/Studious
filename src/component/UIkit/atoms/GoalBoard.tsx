@@ -41,13 +41,10 @@ const useStyles = makeStyles((theme: Theme) =>
         textAlign: "center",
       },
       "& > p": {
-        fontFamily: "Hannotate SC, TsukuARdGothic-Regular,ヒラギノ丸ゴ Pro , HanziPen SC, Wawati SC, san-serif",
-        fontSize: 15,
+        fontFamily: "Hannotate SC, TsukuARdGothic-Regular , HanziPen SC, Wawati SC,ヒラギノ丸ゴ Pro, san-serif",
+        fontSize: 20,
       },
       [theme.breakpoints.down("xs")]: {
-        "& > h1": {
-          fontSize: 20,
-        },
         "& > p": {
           fontSize: 14,
         },

@@ -57,6 +57,10 @@ const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }
             legend: { position: "bottom" },
             tooltip: { textStyle: { color: "#AC2EBF" }, showColorCode: false },
             seriesType: "bars",
+            vAxis: {
+              maxValue: 24,
+              minValue: 0,
+            },
             series: {
               [AssignedNumberForLine]: {
                 type: "line",
