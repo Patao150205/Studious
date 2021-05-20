@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     chart: {
-      height: 400,
+      height: 500,
     },
   })
 );
@@ -32,13 +32,14 @@ type Props = {
 
 const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }) => {
   const classes = useStyles();
+  const AssignedNumberForLine = data[0]?.length - 3;
   return (
     <>
       <div className="module-spacer--small" />
       <div className={`${classes.root}`}>
         <Chart
           className={classes.chart}
-          chartType="ColumnChart"
+          chartType="ComboChart"
           loader={<div>グラフを読込中です....しばらくお待ち下さい😊</div>}
           width={width}
           height={height}
@@ -53,11 +54,12 @@ const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }
             chartArea: { width: "85%", left: "10%" },
             isStacked,
             bar: { groupWidth: "50%" },
-            legend: { position: "none" },
+            legend: { position: "bottom" },
             tooltip: { textStyle: { color: "#AC2EBF" }, showColorCode: false },
+            seriesType: "bars",
             series: {
-              6: {
-                color: "red",
+              [AssignedNumberForLine]: {
+                type: "line",
               },
             },
           }}

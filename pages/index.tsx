@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import {
   Blackboard,
-  CalendarChart,
   ColumnChart,
   GoalBoard,
   PieChart,
@@ -78,10 +77,9 @@ export default function Home() {
   const classes = useStyles();
   const selector = useAppSelector(userMyInfoSelector);
 
-  const [recordsForWeek, setRecordsForWeek] = useState<UserRecord[]>([]);
   const [columnChartDatas, setColumnChartDatas] = useState<string[][]>([]);
   const [pieChartDatas, setPieChartDatas] = useState<(string | number)[]>([]);
-  console.log(pieChartDatas);
+  const [totalTimeForWeek, setTotalTimeForWeek] = useState<number>(0);
 
   const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
   const target = HTMLReactParser(selector.target.replace(/\n/g, "<br />"));
@@ -112,20 +110,35 @@ export default function Home() {
         .where("doneDate", "<=", convertedNowDate)
         .where("doneDate", ">=", lastWeekDate)
         .get();
+
       //取得したデータ
       const gettedRecords: UserRecord[] = [];
       snapshots.forEach((doc: any) => {
         gettedRecords.push(doc.data());
       });
-      setRecordsForWeek(gettedRecords);
+
+      //一週間の学習記録に存在する学習内容の名前だけを取得する
+      const learningContentsName: Set<string> = new Set();
+      gettedRecords.map((record) => {
+        record.learning_content?.map((content) => {
+          learningContentsName.add(content.learningContent);
+        });
+      });
+
+      const totalTimeForWeek = gettedRecords.reduce((totalTime, recordTime) => {
+        return totalTime + recordTime.sumedTime;
+      }, 0);
+
+      setTotalTimeForWeek(totalTimeForWeek);
 
       //カラムチャート用のデータを作成
-      const columnChart: any[] = Array([], [], [], [], [], [], []);
-      columnChart.map((data, index) => {
+      let columnChart: any[] = Array([], [], [], [], [], [], []);
+      columnChart = columnChart.map((data, index) => {
         //データが存在した場合、抽出する
         const targetData = gettedRecords.find((record) => {
           return record.doneDate.seconds === FirebaseTimestamp.fromDate(new Date(y, m, d + index)).seconds;
         });
+
         const date_Date = FirebaseTimestamp.fromDate(new Date(y, m, d + index)).toDate();
         let date = date_Date.toLocaleDateString().slice(5);
         const dayOfWeek = date_Date.getDay();
@@ -138,21 +151,58 @@ export default function Home() {
         }
         data.push(date);
 
+        //
+        const tasks: any[] = [];
+        let data_: any[] = [];
         if (targetData) {
-          const sumedTime = Number((targetData.sumedTime / 60).toFixed(1));
-          data.push(sumedTime);
+          tasks;
+          Array.from(learningContentsName).forEach((name) => {
+            if (targetData.learning_content) {
+              let isFind: true | undefined;
+              targetData.learning_content.map((task) => {
+                if (task.learningContent === name) {
+                  tasks.push(Number((task.convertedToMinutes / 60).toFixed(1)));
+                  isFind = true;
+                }
+              });
+              if (!isFind) {
+                tasks.push(0);
+              }
+            }
+          });
+          data_ = data.concat(tasks);
           if (index !== 6) {
-            data.push("color: blue; opacity: 0.5");
+            data_.push("");
+            //のセット
+            //平均時間のセット
+            data_.push(Number((totalTimeForWeek / 60 / 7).toFixed(1)));
           } else {
-            data.push("color: red");
+            data_.push("");
+            data_.push(Number((totalTimeForWeek / 60 / 7).toFixed(1)));
           }
         } else {
-          data.push(0);
-          data.push("color: blue");
-          return data;
+          data_ = data;
+          learningContentsName.forEach((_) => {
+            data_.push(0);
+          });
+          data_.push("");
+          data_.push(Number((totalTimeForWeek / 60 / 7).toFixed(1)));
         }
+        return data_;
       });
-      const dataName = ["日付", "学習時間(ｈ)", { role: "style" }];
+
+      //データとして渡す配列の[0](Header要素)作成
+      const dataName: (
+        | string
+        | {
+            role: string;
+          }
+      )[] = ["日付"];
+      learningContentsName.forEach((name) => {
+        dataName.push(name);
+      });
+      dataName.push({ role: "style" });
+      dataName.push("平均学習時間(This week)");
       columnChart.unshift(dataName);
       setColumnChartDatas(columnChart);
 
@@ -160,13 +210,6 @@ export default function Home() {
        * PieChart
        */
 
-      //一週間の学習記録に存在する学習内容の名前だけを取得する
-      const learningContentsName: Set<string> = new Set();
-      gettedRecords.map((record) => {
-        record.learning_content?.map((content) => {
-          learningContentsName.add(content.learningContent);
-        });
-      });
       //名前を元に時間を取得する
       const respectiveTimeForWeek: { contentName: string; time: number }[] = [];
       learningContentsName.forEach((name) => {
@@ -185,10 +228,6 @@ export default function Home() {
       setPieChartDatas(pieChart);
     })();
   }, [uid]);
-
-  const totalTimeForWeek = recordsForWeek.reduce((totalTime, recordTime) => {
-    return totalTime + recordTime.sumedTime;
-  }, 0);
 
   return (
     <>
@@ -269,10 +308,9 @@ export default function Home() {
           <div className="module-spacer--very-small" />
         </Paper>
         <div className={classes.charts}>
-          <ColumnChart title="一周間の学習時間(h)" data={columnChartDatas} isStacked={false} />
+          <ColumnChart title="一周間の学習時間(h)" data={columnChartDatas} isStacked={true} />
           <PieChart title="一週間の学習内容内訳(h)" data={pieChartDatas} />
         </div>
-        <CalendarChart />
         <div className="module-spacer--small" />
       </div>
     </>
