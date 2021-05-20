@@ -6,13 +6,14 @@ import React from "react";
 type Props = {
   disabled: boolean;
   onClick?: () => void;
-  children: string;
+  children?: string;
   bgColor: string;
   fColor: string;
   startIcon: any;
+  variant?: "text" | "outlined" | "contained" | undefined;
 };
 
-const SecondButton = ({ disabled, onClick, children, bgColor, fColor, startIcon }: Props) => {
+const SecondButton = ({ disabled, onClick, children, bgColor, fColor, startIcon, variant }: Props) => {
   const useStyles = makeStyles(
     createStyles({
       root: {
@@ -29,11 +30,14 @@ const SecondButton = ({ disabled, onClick, children, bgColor, fColor, startIcon 
   const classes = useStyles();
 
   return (
-    <label htmlFor="uploadFileButton">
-      <Button disabled={disabled} className={classes.root} onClick={onClick} startIcon={startIcon} variant="contained">
-        {children}
-      </Button>
-    </label>
+    <Button
+      disabled={disabled}
+      className={classes.root}
+      onClick={onClick}
+      startIcon={startIcon}
+      variant={variant ?? "contained"}>
+      {children}
+    </Button>
   );
 };
 

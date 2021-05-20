@@ -6,9 +6,8 @@ import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
 import { EditProfileImg, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
 import { Theme } from "@material-ui/core";
-import { useAppDispatch } from "../src/features/hooks";
+import { useAppDispatch, useAppSelector } from "../src/features/hooks";
 import { PartialUserInfo, updateMyInfo, userMyInfoSelector } from "../src/features/usersSlice";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -49,7 +48,7 @@ export type UplodedImg = {
 
 const Reset: FC = () => {
   const classes = useStyles();
-  const selector = useSelector(userMyInfoSelector);
+  const selector = useAppSelector(userMyInfoSelector);
   const {
     formState: { errors },
     control,
@@ -71,19 +70,22 @@ const Reset: FC = () => {
 
   const [uploadedImg, setUploadedImg] = useState<UplodedImg>({ id: "", path: null });
 
-  const onSubmit = useCallback((data: any) => {
-    const newData: PartialUserInfo = {
-      uid: selector.uid,
-      photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
-      introduce_myself: data.introduce ?? "",
-      sns_path: { twitter: data.TwitterURL ?? "", GitHub: data.GitHubURL ?? "" },
-      target: data.target ?? "",
-      username: data.username,
-    };
-    dispatch(updateMyInfo(newData)).then(() => {
-      router.push("/");
-    });
-  }, []);
+  const onSubmit = useCallback(
+    (data: any) => {
+      const newData: PartialUserInfo = {
+        uid: selector.uid,
+        photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
+        introduce_myself: data.introduce ?? "",
+        sns_path: { twitter: data.TwitterURL ?? "", GitHub: data.GitHubURL ?? "" },
+        target: data.target ?? "",
+        username: data.username,
+      };
+      dispatch(updateMyInfo(newData)).then(() => {
+        router.push("/");
+      });
+    },
+    [selector, uploadedImg]
+  );
 
   useEffect(() => {
     setValue("username", selector.username);

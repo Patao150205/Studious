@@ -1,5 +1,5 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faNewspaper, faBell } from "@fortawesome/free-regular-svg-icons";
+import { faNewspaper, faBell, faAddressBook as faAddressBookLight } from "@fortawesome/free-regular-svg-icons";
 import {
   faAddressBook,
   faBars,
@@ -21,6 +21,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
+  faAddressBookLight,
   faAddressBook,
   faBars,
   faBell,

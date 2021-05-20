@@ -7,6 +7,5 @@ export { default as SecondaryButton } from "./SecondaryButton";
 export { default as TextInput } from "./TextInput";
 
 //charts
-export { default as CalendarChart } from "./charts/CalendarChart";
 export { default as ColumnChart } from "./charts/ColumnChart";
 export { default as PieChart } from "./charts/PieChart";

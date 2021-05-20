@@ -17,43 +17,56 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     chart: {
-      height: 400,
+      height: 500,
     },
   })
 );
 
-const ColumnChart: FC = () => {
+type Props = {
+  width?: number;
+  height?: number;
+  data: any[];
+  title: string;
+  isStacked?: boolean;
+};
+
+const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }) => {
   const classes = useStyles();
+  const AssignedNumberForLine = data[0]?.length - 3;
   return (
     <>
       <div className="module-spacer--small" />
       <div className={`${classes.root}`}>
         <Chart
           className={classes.chart}
-          chartType="ColumnChart"
-          loader={<div>Loading Chart</div>}
-          data={[
-            ["City", "2010 Population", "2000 Population"],
-            ["New York City, NY", 8175000, 8008000],
-            ["Los Angeles, CA", 3792000, 3694000],
-            ["Chicago, IL", 2695000, 2896000],
-            ["Houston, TX", 2099000, 1953000],
-            ["Philadelphia, PA", 1526000, 1517000],
-          ]}
+          chartType="ComboChart"
+          loader={<div>グラフを読込中です....しばらくお待ち下さい😊</div>}
+          width={width}
+          height={height}
+          data={data}
           options={{
-            title: "Population of Largest U.S. Cities",
-            chartArea: { width: "50%" },
-            isStacked: true,
-            hAxis: {
-              title: "Total Population",
+            title,
+            titleTextStyle: {
+              color: "#AC2EBF",
+              fontSize: 25,
+              bold: true,
+            },
+            chartArea: { width: "85%", left: "10%" },
+            isStacked,
+            bar: { groupWidth: "50%" },
+            legend: { position: "bottom" },
+            tooltip: { textStyle: { color: "#AC2EBF" }, showColorCode: false },
+            seriesType: "bars",
+            vAxis: {
+              maxValue: 24,
               minValue: 0,
             },
-            vAxis: {
-              title: "City",
+            series: {
+              [AssignedNumberForLine]: {
+                type: "line",
+              },
             },
           }}
-          // For tests
-          rootProps={{ "data-testid": "3" }}
         />
       </div>
     </>

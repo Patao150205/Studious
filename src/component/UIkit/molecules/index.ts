@@ -1,7 +1,7 @@
 export { default as EditProfileImg } from "./EditProfileImg";
 export { default as MenuList } from "./MenuList";
 export { default as PrimaryModal } from "./PrimaryModal";
-export { default as StudiousLogoParallel } from "./StudiousLogoParallel";
+export { default as StudiousLogoHorizontal } from "./StudiousLogoHorizontal";
 export { default as StudiousLogoVertical } from "./StudiousLogoVertical";
 export { default as IconWithName } from "./IconWithName";
 export { default as ImgModal } from "./ImgModal";

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { createStyles, makeStyles } from "@material-ui/core";
 import React, { FC } from "react";
 import { PrimaryCard } from "../atoms";
 import { MenuList } from "../molecules";
@@ -26,11 +26,13 @@ const MainMenu: FC<Props> = ({ forwardRef, handleToggle }) => {
       <MenuList handleToggle={handleToggle ?? (() => {})} />
       <div className={classes.root}>
         <PrimaryCard avatar={<FontAwesomeIcon icon={["far", "newspaper"]} />} title="ニュース" subTitle="News">
-          Studiousリリース予定！!
+          開発中💻
           <br />
           いつ完成するかは、わかりません😅
           <br />
-          只今、UIホームのページのUIを構築中です❗❗
+          只今、学習記録に登録して頂いたデータを元に、学習状況を割り出して、わかりやすく表示することを試みています。
+          <br />
+          投稿閲覧ページの、ページネーションにバグを見つけてしまいました。後ほど修正します。
           <br />
           <a href="https://twitter.com/Patao_program">製作者のTwiiter</a>
         </PrimaryCard>

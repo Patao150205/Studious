@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { PrimaryButton } from "../src/component/UIkit/atoms";
 import { PrimaryModal, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules/index";
 import { signUpWithEmailPassword } from "../src/Auth";
-import { useAppDispatch, useAppSelector } from "../src/features/hooks";
+import { useAppDispatch } from "../src/features/hooks";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles(
@@ -73,7 +73,8 @@ const Register: FC = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = useCallback((data: FormData) => {
+    const username: string = data.registerUsername;
     const password: string = data.registerPassword;
     const confirmPassword: string = data.registerConfirmPassword;
     const email: string = data.registerEmail;
@@ -84,8 +85,9 @@ const Register: FC = () => {
       toggleOpen();
       return;
     }
-    signUpWithEmailPassword(email, dispatch, password, setTitle, setMessage, toggleOpen, router);
-  };
+    console.log(username);
+    signUpWithEmailPassword(username, email, dispatch, password, setTitle, setMessage, toggleOpen, router);
+  }, []);
 
   return (
     <>
