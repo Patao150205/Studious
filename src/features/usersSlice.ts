@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { auth, db } from "../../firebase/firebaseConfig";
+import { db } from "../../firebase/firebaseConfig";
 import { UplodedImg } from "../../pages/edit";
 import { HandleDelete } from "../../pages/record";
 import { SendCommentsData } from "../component/UIkit/organisms/commentArea";
@@ -7,7 +7,6 @@ import { RootState } from "../store";
 
 //Thunk
 export const updateMyInfo: any = createAsyncThunk("user/updateMyInfo", async (data: PartialUserInfo, thunk) => {
-  console.log(data);
   const uid = data.uid;
   await db.collection("users").doc(uid).set(data, { merge: true });
   //Redux用にキャストする
@@ -25,11 +24,13 @@ export const fetchMyUserInfo: any = createAsyncThunk("user/fetchMyUserInfo", asy
 });
 
 export const updateMyRecord: any = createAsyncThunk("user/updateMyRecord", async (data: PartialUserRecord, thunk) => {
+  //編集か新規作成化を判別
   if (!data.recordId) {
     const recordRef = db.collection("users").doc(data.uid).collection("userRecords").doc();
     data.recordId = recordRef.id;
     await recordRef.set(data, { merge: true });
   } else {
+    //編集されたので、isNewをfalseに
     data.isNew = false;
     await db.collection("users").doc(data.uid).collection("userRecords").doc(data.recordId).set(data, { merge: true });
   }
@@ -61,13 +62,6 @@ export const sendPostComment: any = createAsyncThunk("user/sendPostComment", asy
   return data;
 });
 
-export const deletePostComment: any = createAsyncThunk("user/sendPostComment", async (data, thunk) => {});
-
-export const updateIsSignin: any = createAsyncThunk("user/updateIsSignin", async (uid: string, thunk) => {
-  uid && (await db.collection("users").doc(uid).set({ isSignin: false }, { merge: true }));
-  return;
-});
-
 //型の値の型を抽出する。
 type ValueOf<T> = T[keyof T];
 
@@ -75,7 +69,6 @@ type UserInfo = {
   created_at: any;
   email: string;
   introduce_myself: string;
-  isSignin: boolean;
   role: "User" | "Admin";
   photoURL: string;
   sns_path: { twitter: string; GitHub: string };
@@ -115,7 +108,6 @@ export const initialState: UserState = {
     email: "",
     photoURL: "",
     introduce_myself: "",
-    isSignin: false,
     role: "User",
     sns_path: { twitter: "", GitHub: "" },
     statisticalData: { total_time: 0, posts_count: 0 },
@@ -195,18 +187,13 @@ const usersSlice = createSlice({
     [sendPostComment.rejected]: (state, action) => {
       alert("コメントの送信に失敗しました。");
     },
-    [updateIsSignin.fulfilled]: (state, action) => {
-      state.myInfo.isSignin = false;
-    },
   },
 });
 
 export const userSelector = (state: RootState) => state.users;
 export const userMyInfoSelector = (state: RootState) => state.users.myInfo;
 export const userRecordSelector = (state: RootState) => state.users.myRecords;
-export const userIsSinginSelector = (state: RootState) => state.users.myInfo.isSignin;
 export const userStatisticalDataSelector = (state: RootState) => state.users.myInfo.statisticalData;
-
 export const { reflectRecordData, reflectHeart } = usersSlice.actions;
 
 export default usersSlice.reducer;

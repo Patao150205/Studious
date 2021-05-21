@@ -9,6 +9,7 @@ import { Theme } from "@material-ui/core";
 import { useAppDispatch, useAppSelector } from "../src/features/hooks";
 import { PartialUserInfo, updateMyInfo, userMyInfoSelector } from "../src/features/usersSlice";
 import { useRouter } from "next/router";
+import { auth } from "../firebase/firebaseConfig";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +47,7 @@ export type UplodedImg = {
   path: any;
 };
 
-const Reset: FC = () => {
+const Edit: FC = () => {
   const classes = useStyles();
   const selector = useAppSelector(userMyInfoSelector);
   const {
@@ -71,7 +72,7 @@ const Reset: FC = () => {
   const [uploadedImg, setUploadedImg] = useState<UplodedImg>({ id: "", path: null });
 
   const onSubmit = useCallback(
-    (data: any) => {
+    async (data: any) => {
       const newData: PartialUserInfo = {
         uid: selector.uid,
         photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
@@ -80,9 +81,13 @@ const Reset: FC = () => {
         target: data.target ?? "",
         username: data.username,
       };
-      dispatch(updateMyInfo(newData)).then(() => {
-        router.push("/");
-      });
+      await auth.currentUser?.updateProfile({
+        displayName: data.username,
+        photoURL: uploadedImg.path ? uploadedImg.path : selector.photoURL,
+      }),
+        dispatch(updateMyInfo(newData)).then(() => {
+          router.push("/");
+        });
     },
     [selector, uploadedImg]
   );
@@ -109,6 +114,8 @@ const Reset: FC = () => {
           <div className="module-spacer--medium" />
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
             <EditProfileImg photoURL={selector.photoURL} uploadedImg={uploadedImg} setUploadedImg={setUploadedImg} />
+            <div className="module-spacer--small" />
+            <p>※通信状態によって、画像の読み込みに時間がかかる場合があります</p>
             <div className="module-spacer--small" />
             <PrimaryText
               control={control}
@@ -195,4 +202,4 @@ const Reset: FC = () => {
   );
 };
 
-export default Reset;
+export default Edit;

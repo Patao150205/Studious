@@ -1,5 +1,4 @@
 import { Avatar, createStyles, makeStyles } from "@material-ui/core";
-import { useRouter } from "next/router";
 import React, { FC } from "react";
 
 type Props = {
@@ -46,7 +45,7 @@ const IconWithName: FC<Props> = ({ name, src, alt, onClick }) => {
   };
   return (
     <div className={classes.root}>
-      <Avatar src={src} alt={alt} className={`${classes.titleLogo}`} onClick={onClick} />
+      <Avatar src={src ? src : "/noUserImage.jpg"} alt={alt} className={`${classes.titleLogo}`} onClick={onClick} />
       <div className="module-spacer--small" />
       <h1 className={changeFontsize()}>{name}</h1>
     </div>

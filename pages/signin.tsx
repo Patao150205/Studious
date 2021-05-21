@@ -5,7 +5,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { PrimaryButton, SecondaryButton } from "../src/component/UIkit/atoms";
+import { PrimaryButton, PrimaryCard, SecondaryButton } from "../src/component/UIkit/atoms";
 import { PrimaryModal, PrimaryText, StudiousLogoVertical } from "../src/component/UIkit/molecules";
 import { signInWithEmailPassword, SignInWithGitHub, SignInWithTwitter } from "../src/Auth";
 import { useAppDispatch } from "../src/features/hooks";
@@ -14,17 +14,14 @@ import { useRouter } from "next/router";
 const useStyles = makeStyles(
   createStyles({
     root: {
-      position: "relative",
       backgroundImage: "url(img/books-1456513080510-7bf3a84b82f8.jpeg)",
       backgroundPosition: "center",
-      height: "100vh",
+      minHeight: "100vh",
+      padding: "50px 0",
+      height: "auto",
     },
     card: {
       boxShadow: "0px 5px 5px 1px rgba(0, 0, 0, .2)",
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
       backgroundColor: "rgba(255, 255, 255, 0.7)",
     },
     form: {
@@ -110,6 +107,12 @@ const Register: FC = () => {
               placeholder="パスワード"
               type="password"
             />
+            <div className="module-spacer--medium" />
+            <PrimaryCard title="テストアカウント" subTitle="test account">
+              <p>email: test@yahoo.co.jp</p>
+              <br />
+              <p>password: tonkotulove1</p>
+            </PrimaryCard>
             <div className="module-spacer--medium" />
             <div className="p-grid-columns">
               <PrimaryButton submit={true} color="primary" disabled={false}>

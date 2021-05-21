@@ -1,34 +1,72 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 学習管理アプリ(stadious)
 
-## Getting Started
+## 概要
 
-First, run the development server:
+独学のモチベーションを高めるようなアプリを作ることを目指して作成した学習管理アプリです。
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## URL＆テストアカウント
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[Studious ログインページ](https://studious-3e5e67a28-patao150205.vercel.app/)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+    email: test@yahoo.co.jp
+    password: tonkotulove1
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## 主な使用技術
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+    TypeScript
+    React.js
+    Redux
+    Redux-tool-kit
+    Material-UI
+    CSS3
+    Next.js
+    Firebase(auth,firestore,storage)
 
-## Learn More
+## その他ライブラリ
 
-To learn more about Next.js, take a look at the following resources:
+    Google Charts
+    react-google-charts
+    blueimp-load-image
+    Swiper
+    React-hook-form
+    font-awesome
+    html-react-parser
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 機能一覧
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+    認証
+    (Emailログイン, Twitterログイン, GitHubログイン,ログアウト, 新規作成, パスワードリセット,バリデーション)
 
-## Deploy on Vercel
+    プロフィール閲覧,編集
+    (アカウント名、アカウント画像,自由記入欄,目標)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    学習記録の作成(日付、学習時間、画像、コメント、投稿の制限)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    投稿の作成(コメント、画像(スライド))
+
+    学習記録の閲覧(リプライ,画像(スライド),削除,編集, ページネーション)
+
+    全投稿の閲覧(リプライ,画像(スライド),削除,編集, ページネーション)
+
+    学習記録の集計データを表示
+
+    学習記録を元にグラフの自動生成
+
+## 今後追加予定の機能
+
+    ファーストビューの作成
+    パスワード変更
+    アカウント削除
+    グラフの過去一週間以上前の記録の閲覧(ページネーション)
+
+    リアルタイムで投稿を更新するのページネーション (うまく実装できなかったので、再トライ❗)
+    ↑これができれば、SNSのような,ユーザー同士が交流できる機能が作れる😫くそお
+
+## 最後に
+
+初めて 0 からアプリを作る経験だったのと、独学で周りに聞く人がいなくてめっちゃ作るの苦労ましたが、なんとかそれっぽいのが出来上がってきました！！
+謎解きゲームみたいで、楽しいですね ☺️
+
+最後まで、見ていただきありがとうございます 😊
+
+[製作者の Twitter](https://twitter.com/Patao_program)

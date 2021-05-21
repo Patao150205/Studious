@@ -34,4 +34,7 @@ yarn-error.log*
 # vercel
 .vercel
 
+#md
+Practice.md
+
 stadious-firebase-adminsdk-8tnks-8629e38438.json

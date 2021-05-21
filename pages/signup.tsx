@@ -20,10 +20,6 @@ const useStyles = makeStyles(
     },
     card: {
       boxShadow: "0px 5px 5px 1px rgba(0, 0, 0, .2)",
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
       backgroundColor: "rgba(255, 255, 255, 0.7)",
     },
     form: {
@@ -85,7 +81,6 @@ const Register: FC = () => {
       toggleOpen();
       return;
     }
-    console.log(username);
     signUpWithEmailPassword(username, email, dispatch, password, setTitle, setMessage, toggleOpen, router);
   }, []);
 

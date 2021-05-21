@@ -206,8 +206,10 @@ const Record = () => {
       if (isPost) {
         const targetRecord = selector.find((ele) => ele.recordId === recordId);
         let { total_time, posts_count } = statisticalData;
-        total_time = statisticalData.total_time - (targetRecord?.sumedTime ?? 0);
-        posts_count -= 1;
+        if (targetRecord?.isLearningRecord) {
+          total_time = statisticalData.total_time - (targetRecord?.sumedTime ?? 0);
+          posts_count -= 1;
+        }
         const newPosts = selector.filter((ele: UserRecord) => ele.recordId !== recordId);
         const query = {
           uid,
