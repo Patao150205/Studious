@@ -32,7 +32,7 @@ type Props = {
 
 const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }) => {
   const classes = useStyles();
-  const AssignedNumberForLine = data[0]?.length - 3;
+  const AssignedNumberForLineKey = data[0]?.length - 3;
   return (
     <>
       <div className="module-spacer--small" />
@@ -58,11 +58,10 @@ const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }
             tooltip: { textStyle: { color: "#AC2EBF" }, showColorCode: false },
             seriesType: "bars",
             vAxis: {
-              maxValue: 24,
               minValue: 0,
             },
             series: {
-              [AssignedNumberForLine]: {
+              [AssignedNumberForLineKey]: {
                 type: "line",
               },
             },

@@ -18,6 +18,7 @@ import HTMLReactParser from "html-react-parser";
 import { useAppSelector } from "../src/features/hooks";
 import { useEffect, useState } from "react";
 import { auth, db, FirebaseTimestamp } from "../firebase/firebaseConfig";
+import Link from "next/link";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,6 +69,16 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
+    },
+    notFoundField: {
+      margin: 100,
+      textAlign: "center",
+      lineHeight: "1.3",
+      width: "calc(100% - 2rem)",
+      maxWidth: 800,
+      "& > a": {
+        color: "red",
+      },
     },
   })
 );
@@ -138,7 +149,7 @@ export default function Home() {
         const targetData = gettedRecords.find((record) => {
           return record.doneDate.seconds === FirebaseTimestamp.fromDate(new Date(y, m, d + index)).seconds;
         });
-
+        //時間を設定する
         const date_Date = FirebaseTimestamp.fromDate(new Date(y, m, d + index)).toDate();
         let date = date_Date.toLocaleDateString().slice(5);
         const dayOfWeek = date_Date.getDay();
@@ -150,8 +161,7 @@ export default function Home() {
           今日`;
         }
         data.push(date);
-
-        //
+        //taskの時間を入れ込む
         const tasks: any[] = [];
         let data_: any[] = [];
         if (targetData) {
@@ -172,9 +182,9 @@ export default function Home() {
           });
           data_ = data.concat(tasks);
           if (index !== 6) {
+            //styleの設定
+            //平均時間の設定
             data_.push("");
-            //のセット
-            //平均時間のセット
             data_.push(Number((totalTimeForWeek / 60 / 7).toFixed(1)));
           } else {
             data_.push("");
@@ -228,6 +238,8 @@ export default function Home() {
       setPieChartDatas(pieChart);
     })();
   }, [uid]);
+
+  const AverageKey = columnChartDatas[1]?.length - 1;
 
   return (
     <>
@@ -308,8 +320,32 @@ export default function Home() {
           <div className="module-spacer--very-small" />
         </Paper>
         <div className={classes.charts}>
-          <ColumnChart title="一周間の学習時間(h)" data={columnChartDatas} isStacked={true} />
-          <PieChart title="一週間の学習内容内訳(h)" data={pieChartDatas} />
+          {
+            //平均値が0だった場合グラフを表示しない。
+            (columnChartDatas?.[1]?.[AverageKey] as any) != false ? (
+              <>
+                <ColumnChart title="一周間の学習時間(h)" data={columnChartDatas} isStacked={true} />
+                <PieChart title="一週間の学習内容内訳(h)" data={pieChartDatas} />
+              </>
+            ) : (
+              <div className={classes.notFoundField}>
+                <PrimaryCard title={"記録が存在しません"} subTitle={"data not found"}>
+                  <p>過去一週間の学習記録が存在しません</p>
+                  <br />
+                  <p>グラフを表示するためには学習記録を作成する必要があります。</p>
+                  <br />
+                  <p>作成してみよう！😋</p>
+                  <br />
+                  <Link href="/record/edit">
+                    <a>投稿作成ページへ</a>
+                  </Link>
+                  <br />
+                  <br />
+                  <p>(なお、過去一週間以上前の記録を振り返ることのできる機能を実装予定です🧑‍💻)</p>
+                </PrimaryCard>
+              </div>
+            )
+          }
         </div>
         <div className="module-spacer--small" />
       </div>

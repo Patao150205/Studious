@@ -283,12 +283,13 @@ const Reset: FC = () => {
           username: auth.currentUser?.displayName,
           userIcon: auth.currentUser?.photoURL,
         };
+
         dispatch(updateMyRecord(sendData)).then(() => {
           router.push("/record/allpost");
         });
       }
     },
-    [doneDate, sumedTime, registration, uploadedImg, toggleModalOpen, isChecked]
+    [doneDate, sumedTime, registration, uploadedImg, toggleModalOpen, isChecked, auth.currentUser]
   );
 
   const editLearnedEle = useCallback(
@@ -418,6 +419,8 @@ const Reset: FC = () => {
             <div className="module-spacer--small" />
             <UploadPictureButton uploadedImg={uploadedImg} setUploadedImg={setUploadedImg} />
             <div className="module-spacer--small" />
+            <p>※通信状態によって、画像の読み込みに時間がかかる場合があります</p>
+            <div className="module-spacer--small" />
             <div className={classes.imgGrid}>
               {uploadedImg?.[0] &&
                 uploadedImg.map((ele, index) => (
@@ -439,16 +442,32 @@ const Reset: FC = () => {
                 ))}
             </div>
             <div className="module-spacer--small" />
-            <div className="p-grid-columns">
-              <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
-                学習記録を作成する
-              </PrimaryButton>
-            </div>
+            {isChecked ? (
+              <>
+                <div className="p-grid-columns">
+                  <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
+                    学習記録を作成する
+                  </PrimaryButton>
+                </div>
+                <div className="module-spacer--medium" />
+                <Link href="/record">
+                  <a className={classes.link}>学習記録投稿一覧に戻る</a>
+                </Link>
+              </>
+            ) : (
+              <>
+                <div className="p-grid-columns">
+                  <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
+                    投稿を作成する
+                  </PrimaryButton>
+                </div>
+                <div className="module-spacer--medium" />
+                <Link href="/record/allpost">
+                  <a className={classes.link}>全投稿一覧に戻る</a>
+                </Link>
+              </>
+            )}
           </form>
-          <div className="module-spacer--medium" />
-          <Link href="/record">
-            <a className={classes.link}>学習記録投稿一覧に戻る</a>
-          </Link>
           <div className="module-spacer--small" />
         </section>
         <ImgModal

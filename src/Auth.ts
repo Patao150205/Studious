@@ -1,6 +1,6 @@
 import { NextRouter } from "next/router";
-import { auth, db, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
-import { initialState, fetchMyUserInfo, updateMyInfo, updateIsSignin } from "./features/usersSlice";
+import { auth, FirebaseTimestamp, GitHubProvider, TwitterProvider } from "../firebase/firebaseConfig";
+import { initialState, fetchMyUserInfo, updateMyInfo } from "./features/usersSlice";
 
 import React from "react";
 
@@ -194,10 +194,9 @@ export const SignInWithGitHub = async (
     });
 };
 
-export const logout = (router: NextRouter, uid: string, dispatch: any) => {
+export const logout = (router: NextRouter) => {
   auth.signOut().then(() => {
-    dispatch(updateIsSignin(uid));
-    // router.push("/signin");
+    router.push("/signin");
   });
 };
 

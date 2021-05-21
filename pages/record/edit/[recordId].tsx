@@ -155,14 +155,17 @@ const Reset: FC = () => {
       //編集の対象が存在し、かつ学習内容一覧がnullでない場合
       if (target && registration) {
         const convertedToMinutes = formContent.hours * 60 + formContent.minutes;
-        const data = {
-          convertedToMinutes,
-          hours: formContent.hours,
-          minutes: formContent.minutes,
-          learningContent: formContent.learningContent,
-        };
         registration.find((ele, index) => {
           if (ele.learningContent === target) {
+            const data = {
+              convertedToMinutes,
+              hours: formContent.hours,
+              minutes: formContent.minutes,
+              learningContent: formContent.learningContent,
+            };
+            const preTime = registration[index].convertedToMinutes;
+            const diffTime = convertedToMinutes - preTime;
+            setSumedTime((prev) => prev + diffTime);
             registration[index] = data;
             return true;
           }
@@ -304,13 +307,14 @@ const Reset: FC = () => {
           uid: auth.currentUser?.uid,
           username: auth.currentUser?.displayName,
           userIcon: auth.currentUser?.photoURL,
+          recordId: editTargetPost?.recordId,
         };
         dispatch(updateMyRecord(sendData)).then(() => {
           router.push("/record/allpost");
         });
       }
     },
-    [doneDate, sumedTime, registration, uploadedImg, toggleModalOpen, isChecked, editTargetPost?.sumedTime]
+    [doneDate, sumedTime, registration, uploadedImg, toggleModalOpen, isChecked, editTargetPost]
   );
 
   const editLearnedEle = useCallback(
@@ -490,17 +494,33 @@ const Reset: FC = () => {
                 ))}
             </div>
             <div className="module-spacer--small" />
-            <div className="p-grid-columns">
-              <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
-                学習記録を更新する
-              </PrimaryButton>
-            </div>
+            {isChecked ? (
+              <>
+                <div className="p-grid-columns">
+                  <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
+                    学習記録を更新する
+                  </PrimaryButton>
+                </div>
+                <div className="module-spacer--medium" />
+                <Link href="/record">
+                  <a className={classes.link}>学習記録投稿一覧に戻る</a>
+                </Link>
+              </>
+            ) : (
+              <>
+                <div className="p-grid-columns">
+                  <PrimaryButton submit={true} color="primary" disabled={isSubmited}>
+                    投稿を更新する
+                  </PrimaryButton>
+                </div>
+                <div className="module-spacer--medium" />
+                <Link href="/record/allpost">
+                  <a className={classes.link}>全投稿一覧に戻る</a>
+                </Link>
+              </>
+            )}
+            <div className="module-spacer--small" />
           </form>
-          <div className="module-spacer--medium" />
-          <Link href="/record">
-            <a className={classes.link}>学習記録投稿一覧に戻る</a>
-          </Link>
-          <div className="module-spacer--small" />
         </section>
         <ImgModal
           initialSlide={clickedIndex}

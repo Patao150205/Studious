@@ -98,7 +98,7 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
       primary: "ログアウト",
       secondary: "Logout",
       onClick: useCallback(() => {
-        logout(router, uid, dispatch);
+        logout(router);
       }, [logout, router]),
     },
   ];

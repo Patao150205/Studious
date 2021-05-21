@@ -55,7 +55,6 @@ function parseDataToDate(data: UserRecord) {
     });
   }
 }
-
 const Record = () => {
   const user = auth.currentUser;
   const dispatch = useAppDispatch();
