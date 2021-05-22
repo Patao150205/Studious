@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const HeaderIcons: FC = ({}) => {
   const classes = useStyles();
-  const disabledURL = ["/signin", "/signup", "/reset"];
+  const disabledURL = ["/signin", "/signup", "/reset", "/home"];
   const router = useRouter();
   const [barIsOpen, setBarIsOpen] = useState(false);
   const [notificationIsOpen, setNotificationIsOpen] = useState(false);

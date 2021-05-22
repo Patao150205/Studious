@@ -12,7 +12,6 @@ import { store } from "../src/store";
 import AuthObserver from "../src/AuthObserver";
 import { Header, Sidebar } from "../src/templates/index";
 import { useRouter } from "next/router";
-import { auth } from "../firebase/firebaseConfig";
 
 const useStyles = makeStyles((theme) => ({
   spaces: {
@@ -43,7 +42,7 @@ export default function MyApp(props) {
     }
   }, []);
 
-  const disabledURL = ["/signin", "/signup", "/reset"];
+  const disabledURL = ["/signin", "/signup", "/reset", "/home"];
   useEffect(() => {
     setUrl(router.pathname);
   }, [router.pathname]);

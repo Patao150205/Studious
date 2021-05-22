@@ -1,8 +1,10 @@
 export { default as EditProfileImg } from "./EditProfileImg";
+export { default as GradationCard } from "./GradationCard";
 export { default as MenuList } from "./MenuList";
 export { default as PrimaryModal } from "./PrimaryModal";
 export { default as StudiousLogoHorizontal } from "./StudiousLogoHorizontal";
 export { default as StudiousLogoVertical } from "./StudiousLogoVertical";
+export { default as TopicHeader } from "./TopicHeader";
 export { default as IconWithName } from "./IconWithName";
 export { default as ImgModal } from "./ImgModal";
 export { default as InputTime } from "./InputTime";

@@ -8,7 +8,7 @@ import firebase from "firebase/app";
 const AuthObserver: FC = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const notNeedAuthenticated = ["/signin", "/signup", "/reset"];
+  const notNeedAuthenticated = ["/signin", "/signup", "/reset", "/home"];
   const [user, setUser] = useState<firebase.User | null>(null);
   const url = router.pathname;
 

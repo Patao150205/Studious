@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function Home() {
+export default function Profile() {
   const router = useRouter();
   const classes = useStyles();
   const selector = useAppSelector(userMyInfoSelector);
