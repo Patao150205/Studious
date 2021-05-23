@@ -5,7 +5,7 @@ import { createStyles, Theme } from "@material-ui/core";
 import classNames from "classnames";
 import { SecondaryButton } from "../src/component/UIkit/atoms";
 import { useRouter } from "next/router";
-import { GradationCard } from "../src/component/UIkit/molecules";
+import { Footer } from "../src/templates";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -151,12 +151,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     introduce: {
       margin: "0 auto",
-      width: "100%",
+      width: "calc(100% - 2rem)",
       maxWidth: 1200,
       textAlign: "center",
       fontSize: "1.8rem",
       "& > h2": {
         fontSize: "2.5rem",
+      },
+      "& p": {
+        lineHeight: "3.0rem",
       },
     },
     cardWrapper: {
@@ -243,23 +246,16 @@ const Home: FC = () => {
         </div>
         <section className={classes.introduce}>
           <div className="module-spacer--medium" />
-          <h2>機能の紹介</h2>
+          <h2>Studiousとは？</h2>
           <div className="module-spacer--medium" />
-          <div className="module-spacer--medium" />
-          <div className={classes.cardWrapper}>
-            <GradationCard className={classes.gradationCard} title="学習記録投稿" width="30%">
-              <p></p>
-            </GradationCard>
-            <div className="module-spacer--medium" />
-            <GradationCard className={classes.gradationCard} title="学習データの集計" width="30%">
-              <p></p>
-            </GradationCard>
-            <GradationCard className={classes.gradationCard} title="記録の視覚化" width="30%">
-              <p></p>
-            </GradationCard>
-          </div>
+          <p>独学で勉強している方のモチベーションを高めるもしくは、継続することを目的にした学習管理アプリです！</p>
+          <br />
+          <p>
+            一人で勉強していて、やる気が出ないという方、自分の頑張りを記録として残していくことで、確実に少しずつ成長しているという実感を得てくださいね。
+          </p>
           <div className="module-spacer--medium" />
         </section>
+        <Footer />
       </div>
     </>
   );

@@ -11,17 +11,19 @@ const AuthObserver: FC = ({ children }) => {
   const notNeedAuthenticated = ["/signin", "/signup", "/reset", "/home"];
   const [user, setUser] = useState<firebase.User | null>(null);
   const url = router.pathname;
+  console.log(url);
 
   useEffect(() => {
     if (notNeedAuthenticated.includes(url)) {
       return;
     }
     auth.onAuthStateChanged((user) => {
-      if (!user) {
+      //ユーザがいないかつ認証が必要なパス
+      if (!user && !notNeedAuthenticated.includes(url)) {
         router.push("/signin");
       } else {
         setUser(user);
-        dispatch(fetchMyUserInfo(user.uid));
+        dispatch(fetchMyUserInfo(user?.uid));
       }
     });
   }, [url]);

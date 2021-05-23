@@ -3,6 +3,7 @@ import React, { FC, useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import { MenuModal } from "../../../templates";
+import { SecondaryButton } from "../atoms";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -13,6 +14,9 @@ const useStyles = makeStyles((theme: Theme) =>
       [theme.breakpoints.down("sm")]: {
         fontSize: 25,
       },
+    },
+    loginName: {
+      marginLeft: 10,
     },
   })
 );
@@ -33,7 +37,29 @@ const HeaderIcons: FC = ({}) => {
   }, [notificationIsOpen]);
 
   return disabledURL.includes(router.pathname) ? (
-    <></>
+    <>
+      <div className={classes.root}>
+        <SecondaryButton
+          onClick={() => {
+            router.push("/signup");
+          }}
+          disabled={false}
+          bgColor="#C651D4"
+          fColor="white">
+          新規登録
+        </SecondaryButton>
+        <SecondaryButton
+          onClick={() => {
+            router.push("/signin");
+          }}
+          className={classes.loginName}
+          disabled={false}
+          bgColor="#C651D4"
+          fColor="white">
+          ログイン
+        </SecondaryButton>
+      </div>
+    </>
   ) : (
     <>
       <div className={classes.root}>

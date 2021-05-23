@@ -1,8 +1,8 @@
 import { createStyles, makeStyles } from "@material-ui/core";
 import { useRouter } from "next/router";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { auth } from "../../../../firebase/firebaseConfig";
-import { useAppSelector } from "../../../features/hooks";
+import firebase from "firebase/app";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -33,9 +33,11 @@ const StudiousLogoHorizontal: FC = () => {
         className={`u-logo-img--general`}
         width="40px"
         height="40px"
-        onClick={!isSignin ? () => {} : () => router.push("/")}
+        onClick={() => router.push("/home")}
       />
-      <h1 className="u-text-headline--variable" onClick={() => router.push("/")}>
+      <h1
+        className="u-text-headline--variable"
+        onClick={isSignin ? () => router.push("/") : () => router.push("/home")}>
         STUDIOUS
       </h1>
     </div>
