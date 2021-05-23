@@ -11,7 +11,6 @@ const AuthObserver: FC = ({ children }) => {
   const notNeedAuthenticated = ["/signin", "/signup", "/reset", "/home"];
   const [user, setUser] = useState<firebase.User | null>(null);
   const url = router.pathname;
-  console.log(url);
 
   useEffect(() => {
     if (notNeedAuthenticated.includes(url)) {

@@ -59,6 +59,15 @@ const useStyles = makeStyles((theme: Theme) =>
           margin: "0 auto",
         },
       },
+      [theme.breakpoints.down("xs")]: {
+        width: 280,
+        "& > p": {
+          fontSize: "1.3rem",
+        },
+        "& > h2": {
+          fontSize: "1.0rem",
+        },
+      },
     },
     studious: {
       display: "flex",
@@ -95,7 +104,7 @@ const useStyles = makeStyles((theme: Theme) =>
         transitionDelay: "0.42s",
       },
       [theme.breakpoints.down("xs")]: {
-        // fontSize: "4.0rem",
+        fontSize: "3.0rem",
       },
     },
     subTitle: {
@@ -135,6 +144,9 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: "2.5rem",
       margin: "0 auto",
       fontWeight: 800,
+      [theme.breakpoints.down("xs")]: {
+        fontSize: "1.0rem",
+      },
     },
     macImg: {
       display: "block",
@@ -148,6 +160,9 @@ const useStyles = makeStyles((theme: Theme) =>
       [theme.breakpoints.down("md")]: {
         margin: 0,
       },
+      [theme.breakpoints.down("xs")]: {
+        maxWidth: 300,
+      },
     },
     introduce: {
       margin: "0 auto",
@@ -155,11 +170,16 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: 1200,
       textAlign: "center",
       fontSize: "1.8rem",
+      lineHeight: "3.0rem",
       "& > h2": {
         fontSize: "2.5rem",
       },
-      "& p": {
-        lineHeight: "3.0rem",
+      [theme.breakpoints.down("xs")]: {
+        fontSize: "1.0rem",
+        lineHeight: "2.0rem",
+        "& > h2": {
+          fontSize: "1.8rem",
+        },
       },
     },
     cardWrapper: {
@@ -171,13 +191,6 @@ const useStyles = makeStyles((theme: Theme) =>
         margin: "0 auto",
         flexDirection: "column",
       },
-    },
-    gradationCard: {
-      width: "30%",
-      [theme.breakpoints.down("md")]: {
-        width: "100%",
-      },
-      margin: "0 auto",
     },
   })
 );

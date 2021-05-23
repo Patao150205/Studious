@@ -13,6 +13,10 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: 20,
       textAlign: "center",
       padding: "30px 0",
+      minWidth: "calc(320px - 2rem)",
+      [theme.breakpoints.down("xs")]: {
+        fontSize: "1.0rem",
+      },
     },
     container: { textAlign: "center", display: "inline-block" },
     TwitterIcon: { color: "#5097f5" },
