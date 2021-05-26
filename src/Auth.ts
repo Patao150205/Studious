@@ -196,7 +196,7 @@ export const SignInWithGitHub = async (
 
 export const logout = (router: NextRouter) => {
   auth.signOut().then(() => {
-    router.push("/signin");
+    router.push("/home");
   });
 };
 

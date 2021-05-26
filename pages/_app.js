@@ -12,7 +12,6 @@ import { store } from "../src/store";
 import AuthObserver from "../src/AuthObserver";
 import { Header, Sidebar } from "../src/templates/index";
 import { useRouter } from "next/router";
-import { auth } from "../firebase/firebaseConfig";
 
 const useStyles = makeStyles((theme) => ({
   spaces: {
@@ -36,14 +35,13 @@ export default function MyApp(props) {
   const { Component, pageProps } = props;
 
   React.useEffect(() => {
-    // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
 
-  const disabledURL = ["/signin", "/signup", "/reset"];
+  const disabledURL = ["/signin", "/signup", "/reset", "/home"];
   useEffect(() => {
     setUrl(router.pathname);
   }, [router.pathname]);

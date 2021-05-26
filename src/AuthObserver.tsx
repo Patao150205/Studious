@@ -8,7 +8,7 @@ import firebase from "firebase/app";
 const AuthObserver: FC = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const notNeedAuthenticated = ["/signin", "/signup", "/reset"];
+  const notNeedAuthenticated = ["/signin", "/signup", "/reset", "/home"];
   const [user, setUser] = useState<firebase.User | null>(null);
   const url = router.pathname;
 
@@ -17,11 +17,12 @@ const AuthObserver: FC = ({ children }) => {
       return;
     }
     auth.onAuthStateChanged((user) => {
-      if (!user) {
+      //ユーザがいないかつ認証が必要なパス
+      if (!user && !notNeedAuthenticated.includes(url)) {
         router.push("/signin");
       } else {
         setUser(user);
-        dispatch(fetchMyUserInfo(user.uid));
+        dispatch(fetchMyUserInfo(user?.uid));
       }
     });
   }, [url]);
