@@ -2,7 +2,6 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import { useRouter } from "next/router";
 import React, { FC } from "react";
 import { auth } from "../../../../firebase/firebaseConfig";
-import firebase from "firebase/app";
 import classNames from "classnames";
 
 const useStyles = makeStyles((theme: Theme) =>

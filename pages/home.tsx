@@ -17,7 +17,9 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundPositionY: "50%",
       backgroundPositionX: "center",
       "& > main": {
+        minWidth: "calc(320px - 2rem)",
         margin: "0 auto",
+        width: "100%",
         maxWidth: 1280,
         display: "flex",
       },
@@ -31,9 +33,12 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     studiousWrapper: {
+      margin: "0 auto",
       [theme.breakpoints.down("md")]: {
         width: 500,
-        margin: "0 auto",
+      },
+      [theme.breakpoints.down("xs")]: {
+        width: 280,
       },
     },
     headingWrapper: {
