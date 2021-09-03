@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const HeaderIcons: FC = ({}) => {
+const HeaderIcons: FC = ({ }) => {
   const classes = useStyles();
   const disabledURL = ["/signin", "/signup", "/reset", "/home"];
   const router = useRouter();
@@ -72,11 +72,6 @@ const HeaderIcons: FC = ({}) => {
   ) : (
     <>
       <div className={classes.root}>
-        <IconButton onClick={toggleBellButton} aria-label="Notification bell">
-          <Badge badgeContent={4} color="error">
-            <FontAwesomeIcon icon={["far", "bell"]} className={classes.icon} />
-          </Badge>
-        </IconButton>
         <IconButton onClick={toggleBarButton} aria-label="open modal">
           <FontAwesomeIcon icon={["fas", "bars"]} className={classes.icon} />
         </IconButton>

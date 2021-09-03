@@ -1,8 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../firebase/firebaseConfig";
 import { UplodedImg } from "../../pages/edit";
 import { HandleDelete } from "../../pages/record";
-import { SendCommentsData } from "../component/UIkit/organisms/commentArea";
 import { RootState } from "../store";
 
 //Thunk
@@ -45,23 +44,6 @@ export const deleteUserRecord: any = createAsyncThunk(
   }
 );
 
-export const sendPostComment: any = createAsyncThunk("user/sendPostComment", async (data: SendCommentsData, thunk) => {
-  await db
-    .collection("users")
-    .doc(data.recordAuthorUid)
-    .collection("userRecords")
-    .doc(data.recordId)
-    .set({ othersComments: data }, { merge: true });
-  const convertedData = data.comments.map((comment) => {
-    if (comment.created_at.seconds) {
-      comment.created_at = comment.created_at.toDate().toLocaleString();
-    }
-    return comment;
-  });
-  data.comments = convertedData;
-  return data;
-});
-
 //型の値の型を抽出する。
 type ValueOf<T> = T[keyof T];
 
@@ -84,7 +66,6 @@ export type UserRecord = {
   recordId: string;
   learning_content?: [{ learningContent: string; hours: number; minutes: number; convertedToMinutes: number }];
   ownComment: string;
-  othersComments?: SendCommentsData;
   images: UplodedImg[];
   isNew: boolean;
   isLearningRecord: boolean;
@@ -123,7 +104,6 @@ export const initialState: UserState = {
       goodHeart: [],
       learning_content: [{ learningContent: "", hours: 0, minutes: 0, convertedToMinutes: 0 }],
       ownComment: "",
-      othersComments: { comments: [], recordAuthorUid: "", recordId: "" },
       images: [],
       isNew: true,
       isLearningRecord: false,
@@ -174,18 +154,6 @@ const usersSlice = createSlice({
     },
     [deleteUserRecord.rejected]: (state, action) => {
       alert("投稿の削除に失敗しました");
-    },
-    [sendPostComment.fulfilled]: (state, action: PayloadAction<SendCommentsData>) => {
-      const recordId = action.payload.recordId;
-      state.myRecords.find((record) => {
-        if (record.recordId === recordId) {
-          record.othersComments = action.payload;
-          return true;
-        }
-      });
-    },
-    [sendPostComment.rejected]: (state, action) => {
-      alert("コメントの送信に失敗しました。");
     },
   },
 });

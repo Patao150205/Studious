@@ -86,14 +86,6 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
       }, [router]),
     },
     {
-      icon: <FontAwesomeIcon size="lg" icon={["fas", "users"]} />,
-      primary: "他の人の投稿＜実装予定＞",
-      secondary: "Other people's learning records",
-      onClick: useCallback(() => {
-        router.push("/record/interaction");
-      }, [router]),
-    },
-    {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "sign-out-alt"]} />,
       primary: "ログアウト",
       secondary: "Logout",
