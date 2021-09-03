@@ -47,13 +47,6 @@ function parseDataToDate(data: UserRecord) {
   if (data?.doneDate?.seconds) {
     data.doneDate = data.doneDate.toDate().toLocaleString();
   }
-  if (data.othersComments?.comments) {
-    data.othersComments.comments.map((comment) => {
-      if (comment.created_at.seconds) {
-        comment.created_at = comment.created_at.toDate().toLocaleString();
-      }
-    });
-  }
 }
 
 const Record = () => {

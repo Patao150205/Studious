@@ -3,10 +3,10 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
 import "firebase/analytics";
-import "firebase/functions";
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBhUr2QPiHdVAHtmGc9qXiJ39b_RksH8LA",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "stadious.firebaseapp.com",
   databaseURL: "https://stadious.firebaseio.com",
   projectId: "stadious",

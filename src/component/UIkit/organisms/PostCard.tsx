@@ -1,20 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Avatar,
-  Badge,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
   createStyles,
   Divider,
-  IconButton,
   makeStyles,
 } from "@material-ui/core";
 import { useRouter } from "next/router";
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { CommentArea } from ".";
 import { auth, db } from "../../../../firebase/firebaseConfig";
 import { UplodedImg } from "../../../../pages/edit";
 import { useAppDispatch } from "../../../features/hooks";
@@ -224,28 +220,6 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
             </div>
           ))}
         </div>
-        <CardActions>
-          <IconButton className={classes.favoriteBtn} onClick={toggleCommentsOpen}>
-            <Badge max={999} badgeContent={post.othersComments?.comments.length} color="primary">
-              <FontAwesomeIcon icon={["fas", "comments"]} />
-            </Badge>
-          </IconButton>
-          <IconButton disabled={true} className={`${classes.favoriteBtn} ${isGood && classes.good}`} onClick={() => {}}>
-            <Badge max={999} badgeContent={0} color="primary">
-              <FontAwesomeIcon icon={["fas", "heart"]} />
-            </Badge>
-          </IconButton>
-        </CardActions>
-        {isOpenComments && (
-          <>
-            <CommentArea
-              comments={post.othersComments?.comments ?? []}
-              recordId={post.recordId}
-              recordAuthorUid={post.uid}
-            />
-            <div className="module-spacer--very-small" />
-          </>
-        )}
       </Card>
       <ImgModal
         initialSlide={clickedIndex}
