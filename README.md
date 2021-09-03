@@ -6,7 +6,7 @@
 
 ## URL＆テストアカウント
 
-[Studious ログインページ](https://studious-3e5e67a28-patao150205.vercel.app/)
+[Studious　ホームページ](https://studious-61g8s50ep-patao150205.vercel.app/home)
 
     email: test@yahoo.co.jp
     password: tonkotulove1
