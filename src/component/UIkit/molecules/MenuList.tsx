@@ -47,18 +47,10 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
   const ListItemContents: ListeItemContent[] = [
     {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "user"]} />,
-      primary: "プロフィール",
-      secondary: "Profile",
+      primary: "学習の分析",
+      secondary: "Learning analytics",
       onClick: useCallback(() => {
         router.push("/");
-      }, [router]),
-    },
-    {
-      icon: <FontAwesomeIcon size="lg" icon={["fas", "user-edit"]} />,
-      primary: "プロフィールの編集",
-      secondary: "ProfileEdit",
-      onClick: useCallback(() => {
-        router.push("/edit");
       }, [router]),
     },
     {
@@ -94,7 +86,7 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
       }, [logout, router]),
     },
   ];
-
+  
   return (
     <>
       <List onClick={handleToggle} subheader={<h2 className={classes.headerText}>Menu</h2>} className={classes.list}>

@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, Paper, Theme } from "@material-ui/core";
+import { createStyles, IconButton, makeStyles, Paper, Theme } from "@material-ui/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import {
@@ -18,7 +18,6 @@ import HTMLReactParser from "html-react-parser";
 import { useAppSelector } from "../src/features/hooks";
 import { useEffect, useState } from "react";
 import { auth, db, FirebaseTimestamp } from "../firebase/firebaseConfig";
-import Link from "next/link";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,6 +64,19 @@ const useStyles = makeStyles((theme: Theme) =>
         marginTop: 40,
       },
     },
+    pagination: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      width: "calc(100% - 2rem)",
+      maxWidth: '50%',
+      margin: "15px auto 0 auto",
+    },
+    paginationBtn: {
+      fontSize: "2rem",
+      color: theme.palette.primary[500],
+      fontWeight: "bold",
+      cursor: 'pointer',
+    },
     charts: {
       display: "flex",
       flexDirection: "column",
@@ -88,23 +100,32 @@ export default function Profile() {
   const classes = useStyles();
   const selector = useAppSelector(userMyInfoSelector);
 
+
   const [columnChartDatas, setColumnChartDatas] = useState<string[][]>([]);
   const [pieChartDatas, setPieChartDatas] = useState<(string | number)[]>([]);
   const [totalTimeForWeek, setTotalTimeForWeek] = useState<number>(0);
+  const pagination = isNaN(Number(router.query.pagination)) ? 0 : Number(router.query.pagination);
 
   const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
   const target = HTMLReactParser(selector.target.replace(/\n/g, "<br />"));
   const status = selector.statisticalData;
   const uid = auth.currentUser?.uid;
 
+  console.log(columnChartDatas);
+  console.log(new Date(FirebaseTimestamp.now().toDate()));
   useEffect(() => {
+    if (pagination < 0) {
+      router.push('/');
+    }
     (async () => {
-      const TimeNow = new Date(FirebaseTimestamp.now().toDate());
-      const dateNow = TimeNow.setHours(0, 0, 0, 0);
+      const NowTime = new Date(FirebaseTimestamp.now().toDate());
+      const latestTime = new Date(NowTime.setDate(NowTime.getDate() - pagination * 7));
+
+      const dateNow = latestTime.setHours(0, 0, 0, 0);
       //一週間前の日付を求める
-      const y = TimeNow.getFullYear();
-      const m = TimeNow.getMonth();
-      const d = TimeNow.getDate() - 6;
+      const y = latestTime.getFullYear();
+      const m = latestTime.getMonth();
+      const d = latestTime.getDate() - 6;
       const lastWeekDate = FirebaseTimestamp.fromDate(new Date(y, m, d));
       const convertedNowDate = FirebaseTimestamp.fromMillis(dateNow);
 
@@ -237,9 +258,24 @@ export default function Profile() {
       pieChart.unshift(["学習内容(h)", "(割合)"]);
       setPieChartDatas(pieChart);
     })();
-  }, [uid]);
+  }, [uid, router.query.pagination]);
 
-  const AverageKey = columnChartDatas[1]?.length - 1;
+  const handlePagination = (controlNum: number) => {
+    // controlNumが、0 一週間前に、1 一週間後に
+    // 何週間前かを表す
+    console.log(pagination)
+    let paginationNum = pagination;
+      if (controlNum === 0) {
+        paginationNum += 1; 
+      }
+      if (controlNum === 1) {
+        paginationNum -=1;
+      }
+    // マイナスは許さない
+    paginationNum < 0 && (paginationNum = 0);
+    
+    router.push({pathname: '/', query: {pagination: paginationNum}}, undefined, {scroll: false});
+  }
 
   return (
     <>
@@ -319,32 +355,20 @@ export default function Profile() {
           </div>
           <div className="module-spacer--very-small" />
         </Paper>
+        <div className={classes.pagination}>
+          <IconButton onClick={() => handlePagination(0)}>
+        <FontAwesomeIcon className={classes.paginationBtn}  icon={["fas", "chevron-left"]} />
+          </IconButton>
+          <IconButton disabled={pagination == 0} onClick={() => handlePagination(1)}>
+        <FontAwesomeIcon className={classes.paginationBtn}  icon={["fas", "chevron-right"]} />
+          </IconButton>
+        </div>
         <div className={classes.charts}>
           {
-            //平均値が0だった場合グラフを表示しない。
-            (columnChartDatas?.[1]?.[AverageKey] as any) != false ? (
               <>
                 <ColumnChart title="一周間の学習時間(h)" data={columnChartDatas} isStacked={true} />
                 <PieChart title="一週間の学習内容内訳(h)" data={pieChartDatas} />
               </>
-            ) : (
-              <div className={classes.notFoundField}>
-                <PrimaryCard title={"記録が存在しません"} subTitle={"data not found"}>
-                  <p>過去一週間の学習記録が存在しません</p>
-                  <br />
-                  <p>グラフを表示するためには学習記録を作成する必要があります。</p>
-                  <br />
-                  <p>作成してみよう！😋</p>
-                  <br />
-                  <Link href="/record/edit">
-                    <a>投稿作成ページへ</a>
-                  </Link>
-                  <br />
-                  <br />
-                  <p>(なお、過去一週間以上前の記録を振り返ることのできる機能を実装予定です🧑‍💻)</p>
-                </PrimaryCard>
-              </div>
-            )
           }
         </div>
         <div className="module-spacer--small" />
