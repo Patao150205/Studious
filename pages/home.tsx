@@ -213,6 +213,14 @@ const Home: FC = () => {
     <>
       <Head>
         <title>Studious ホーム</title>
+        <meta name="description" content="独学で勉強している方のモチベーションを高めるもしくは、継続することを目的にした学習管理アプリです！" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@Patao_program" />
+        <meta name="twitter:creator" content="@Patao_program" />
+        <meta property="og:url" content="https://studious-jzbtz3xyn-patao150205.vercel.app/home" />
+        <meta property="og:title" content="学習管理アプリ Studious" />
+        <meta property="og:description" content="独学で勉強している方のモチベーションを高めるもしくは、継続することを目的にした学習管理アプリです！" />
+        <meta property="og:image" content="https://studious-jzbtz3xyn-patao150205.vercel.app/ogp.png" />
       </Head>
       <div className={`${classes.root} c-section-wrapping--main`}>
         <div className={classes.imgWrapper}>
