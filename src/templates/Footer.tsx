@@ -34,14 +34,14 @@ const Footer: FC<Props> = ({}) => {
           製作者のツイッター
         </h1>
         <div className="module-spacer--very-small" />
-        <a href="Twitter">https://twitter.com/Patao_program</a>
+        <a href="https://twitter.com/Patao_program">https://twitter.com/Patao_program</a>
         <div className="module-spacer--small" />
-        <h1>
+        {/* <h1>
           <FontAwesomeIcon className={classes.GitHubIcon} icon={["fab", "github"]} />
           製作者のGitHub
         </h1>
         <div className="module-spacer--very-small" />
-        <a href="GitHub">https://github.com/Patao150205</a>
+        <a href="https://github.com/Patao150205">https://github.com/Patao150205</a> */}
       </div>
     </section>
   );
