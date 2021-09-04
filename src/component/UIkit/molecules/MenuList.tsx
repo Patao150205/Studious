@@ -76,6 +76,13 @@ const MenuList: FC<Props> = ({ handleToggle }) => {
       onClick: useCallback(() => {
         router.push("/record/allpost");
       }, [router]),
+    },    {
+      icon: <FontAwesomeIcon size="lg" icon={["fas", "user-edit"]} />,
+      primary: "プロフィールの編集",
+      secondary: "ProfileEdit",
+      onClick: useCallback(() => {
+        router.push("/edit");
+      }, [router]),
     },
     {
       icon: <FontAwesomeIcon size="lg" icon={["fas", "sign-out-alt"]} />,

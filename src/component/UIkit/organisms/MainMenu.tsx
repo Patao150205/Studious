@@ -26,6 +26,14 @@ const MainMenu: FC<Props> = ({ forwardRef, handleToggle }) => {
       <MenuList handleToggle={handleToggle ?? (() => { })} />
       <div className={classes.root}>
         <PrimaryCard avatar={<FontAwesomeIcon icon={["far", "newspaper"]} />} title="ニュース" subTitle="News">
+          <strong>バージョン2.0.0リリース❗️</strong>
+          <br />
+          <br />
+          <p>余計な機能を削ぎ落とし、</p>
+          <p>シンプルにしました。</p>
+          <br />
+          <p>↓メインのアップデート</p>
+          <p><span style={{color: 'red'}}>今週以前の分析</span>が可能になりました！</p>
           <a href="https://twitter.com/Patao_program">製作者のTwiiter</a>
         </PrimaryCard>
       </div>

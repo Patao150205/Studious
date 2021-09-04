@@ -13,8 +13,8 @@ import { useRouter } from "next/router";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { auth, db } from "../../../../firebase/firebaseConfig";
 import { UplodedImg } from "../../../../pages/edit";
-import { useAppDispatch } from "../../../features/hooks";
-import { reflectHeart, UserRecord } from "../../../features/usersSlice";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
+import { reflectHeart, userMyInfoSelector, UserRecord } from "../../../features/usersSlice";
 import { ImgModal } from "../molecules";
 
 const useStyles = makeStyles((theme: any) =>
@@ -98,6 +98,8 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const userInfo = useAppSelector(userMyInfoSelector);
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenComments, setIsOpenComments] = useState(false);
@@ -153,13 +155,13 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
             <Avatar
               onClick={() => router.push("/")}
               className={classes.userIcon}
-              src={post.userIcon ? post.userIcon : "/noUserImage.jpg"}
+              src={userInfo.photoURL ? userInfo.photoURL : "/noUserImage.jpg"}
             />
           }
           title={
             <>
               <p onClick={() => router.push("/")} className={classes.username}>
-                {post.username}
+                {userInfo.username}
               </p>
               <p>{post.created_at}</p>
             </>
@@ -174,7 +176,7 @@ const PostCard: FC<Props> = ({ post, handleDelete }) => {
                 icon={["fas", "pencil-alt"]}
               />
               <FontAwesomeIcon
-                onClick={() => handleDelete(post.uid, post.recordId)}
+                onClick={() => handleDelete(userInfo.uid, post.recordId)}
                 className={classes.trash}
                 icon={["fas", "trash"]}
               />

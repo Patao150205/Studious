@@ -48,6 +48,8 @@ function parseDataToDate(data: UserRecord) {
     data.doneDate = data.doneDate.toDate().toLocaleString();
   }
 }
+
+
 const Record = () => {
   const user = auth.currentUser;
   const dispatch = useAppDispatch();
@@ -124,6 +126,7 @@ const Record = () => {
   }, []);
 
   useEffect(() => {
+    console.log(selector)
     if (lastRecord && selector) {
       if (selector.length > 0) {
         setHasNextPage(true);
@@ -132,6 +135,7 @@ const Record = () => {
             setHasNextPage(false);
           }
         });
+        console.log(selector.slice(-1))
         setCurrentLastRecord(selector.slice(-1)[0]);
       }
     }
@@ -148,8 +152,8 @@ const Record = () => {
     }
   }, [firstRecord, lastRecord, selector]);
 
-  // console.log(firstRecord);
-  // console.log(lastRecord);
+  // console.log(firstRecord, '1');
+  // console.log(lastRecord , '2');
   // console.log(currentFirstRecord);
   // console.log(currentLastRecord);
   // console.log(hasNextPage);
@@ -174,6 +178,7 @@ const Record = () => {
       });
   };
   const handlePrev = () => {
+    console.log(currentFirstRecord, 'first');
     db.collection("users")
       .doc(user?.uid)
       .collection("userRecords")

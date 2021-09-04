@@ -58,8 +58,13 @@ const ColumnChart: FC<Props> = ({ width, height, data, title, isStacked = true }
             tooltip: { textStyle: { color: "#AC2EBF" }, showColorCode: false },
             seriesType: "bars",
             vAxis: {
-              minValue: 0,
+              minValue:0,
+              maxValue: 1,
+              viewWindow: {
+                min: 0,
+              },
             },
+            
             series: {
               [AssignedNumberForLineKey]: {
                 type: "line",
