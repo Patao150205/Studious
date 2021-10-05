@@ -371,7 +371,7 @@ export default function Profile() {
         <div className={classes.charts}>
           {
               <>
-                <ColumnChart title="一周間の学習時間(h)" data={columnChartDatas} isStacked={true} />
+                <ColumnChart title="一週間の学習時間(h)" data={columnChartDatas} isStacked={true} />
                 <PieChart title="一週間の学習内容内訳(h)" data={pieChartDatas} />
               </>
           }
