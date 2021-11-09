@@ -1,25 +1,30 @@
-# ***学習管理アプリ(studious)***
+# **_学習管理アプリ(studious)_**
 
 ## 概要
 
 独学のモチベーションを高めるようなアプリを作ることを目指して作成した学習管理アプリです。
 
-___
+---
+
 ## イメージ
+
 ![イメージ1](https://user-images.githubusercontent.com/79029696/135963811-f8044977-3be6-4cb6-bce9-fc91bae8b87a.png)
 ![イメージ2](https://user-images.githubusercontent.com/79029696/135963819-63bae6db-b277-4cf5-8e27-7ef725c8d02e.png)
 ![イメージ3](https://user-images.githubusercontent.com/79029696/135963836-72026e66-9fc8-4033-9520-e8e0e069eedf.png)
-___
+
+---
 
 ## URL＆テストアカウント
 
-[Studious ホーム](https://studious-two.vercel.app/home)
+[Studious ホーム](https://studious.patapatao.com/home)
 
 ### テストアカウント
 
     email: test@yahoo.co.jp
     password: tonkotulove1
-___
+
+---
+
 ## 主な使用技術
 
     TypeScript
@@ -40,14 +45,16 @@ ___
     React-hook-form
     font-awesome
     html-react-parser
-___
+
+---
+
 ## 機能一覧
 
     認証
     (Emailログイン, Twitterログイン, GitHubログイン,バリデーション)
 
     ユーザー新規作成(バリデーション)
-     
+
     パスワードリセット
 
     プロフィール閲覧,編集
@@ -64,7 +71,9 @@ ___
     学習記録の集計データを表示
 
     学習記録を元にグラフの自動生成
-___
+
+---
+
 ## 最後に
 
 独学で周りに聞く人がいなくてめっちゃ作るの苦労ましたが、なんとかそれっぽいのが出来上がってきました！！
