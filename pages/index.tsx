@@ -103,7 +103,6 @@ export default function Profile() {
 
   const [columnChartDatas, setColumnChartDatas] = useState<string[][]>([]);
   const [pieChartDatas, setPieChartDatas] = useState<(string | number)[]>([]);
-  const [totalTimeForWeek, setTotalTimeForWeek] = useState<number>(0);
   const pagination = isNaN(Number(router.query.pagination)) ? 0 : Number(router.query.pagination);
 
   const introduce_myself = HTMLReactParser(selector.introduce_myself.replace(/\n/g, "<br />"));
@@ -155,10 +154,9 @@ export default function Profile() {
       return totalTime + recordTime.sumedTime;
     }, 0);
 
-    setTotalTimeForWeek(totalTimeForWeek);
-
     //カラムチャート用のデータを作成
     let columnChart: any[] = Array([], [], [], [], [], [], []);
+    const todayDate = new Date().toLocaleDateString().slice(5);
     columnChart = columnChart.map((data, index) => {
       //データが存在した場合、抽出する
       const targetData = gettedRecords.find((record) => {
@@ -166,16 +164,19 @@ export default function Profile() {
       });
       //時間を設定する
       const date_Date = FirebaseTimestamp.fromDate(new Date(y, m, d + index)).toDate();
-      let date = date_Date.toLocaleDateString().slice(5);
+      const date = date_Date.toLocaleDateString().slice(5);
       const dayOfWeek = date_Date.getDay();
       const dayOfWeekStr = ["日", "月", "火", "水", "木", "金", "土"][dayOfWeek];
-      date = `${date}
+      let displayDate = "";
+      if (date !== todayDate) {
+        displayDate = `${date}
       ${dayOfWeekStr}`;
-      if (index === 6) {
-        date = `${date}
+      } else {
+        displayDate = `${date}
         今日`;
       }
-      data.push(date);
+      data.push(displayDate);
+
       //taskの時間を入れ込む
       const tasks: any[] = [];
       let data_: any[] = [];
